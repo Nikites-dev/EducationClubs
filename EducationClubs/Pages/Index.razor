@@ -1,9 +1,28 @@
 ﻿@page "/"
+@using EducationClubs.Models
+@using EducationClubs.Database
+@inject UserDbConnection _connection
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<center>NEW EDUCATION PROJECT</center>
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code
+{
+    protected override void OnInitialized()
+    {
+        add();
+    }
+
+    public void add()
+    {
+        User user = new User();
+        user.Email = "test";
+        user.Image = "test";
+        user.Password = "test";
+        user.Username = "test";
+
+        _connection.AddToDatabase(user);
+    }
+}

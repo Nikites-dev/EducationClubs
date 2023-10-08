@@ -1,13 +1,20 @@
-using EducationClubs.Data;
+using EducationClubs.Database;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.Configure<DatabaseConnectionSettings>(
+    builder.Configuration.GetSection("MongoConnection"));
+
+builder.Services.AddScoped<UserDbConnection>();
 
 var app = builder.Build();
 
@@ -29,3 +36,11 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
+
+public class DatabaseConnectionSettings
+{
+    public string DefaultConnection { get; set; }
+    public string DbName { get; set; }
+    public string Users { get; set; }
+}
