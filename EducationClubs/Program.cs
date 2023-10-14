@@ -1,9 +1,4 @@
-using EducationClubs.Database;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.Configure<DatabaseConnectionSettings>(
-    builder.Configuration.GetSection("MongoConnection"));
-
-builder.Services.AddScoped<UserDbConnection>();
+builder.Services.AddDbContext<EducationClubs.ScaffoldedModels.EducationClubContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+});
 
 var app = builder.Build();
 
@@ -36,11 +32,3 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
-
-
-public class DatabaseConnectionSettings
-{
-    public string DefaultConnection { get; set; }
-    public string DbName { get; set; }
-    public string Users { get; set; }
-}
