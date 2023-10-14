@@ -1,7 +1,6 @@
 ﻿@page "/"
-@using EducationClubs.Models
-@using EducationClubs.Database
-@inject UserDbConnection _connection
+@using EducationClubs.ScaffoldedModels
+@inject EducationClubContext educationClubContext
 
 <PageTitle>Index</PageTitle>
 
@@ -14,15 +13,15 @@
     {
         add();
     }
-
+    
     public void add()
     {
-        User user = new User();
-        user.Email = "test";
-        user.Image = "test";
-        user.Password = "test";
-        user.Username = "test";
-
-        _connection.AddToDatabase(user);
+        Account account = new Account();
+        account.Login = "iamTeacher1";
+        account.Password = "123";
+        account.RoleId = 2;
+            
+        educationClubContext.Accounts.Add(account);
+        educationClubContext.SaveChangesAsync();
     }
 }
