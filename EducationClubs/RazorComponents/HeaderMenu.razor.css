@@ -1,0 +1,33 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.menu {
+    display: flex;
+    height: 60px;
+    background: #57986e;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    justify-content: space-between;
+}
+
+.box-profile {
+    display: flex;
+    background: red;
+    flex-direction: row;
+    align-items: center;
+}
+
+.box1 {
+    display: flex;
+    flex-direction: row;
+}
+
+.nav-btns {
+    float: left;
+    background: palevioletred;
+    margin-left: 10px;
+}
