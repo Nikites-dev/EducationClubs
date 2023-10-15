@@ -15,6 +15,8 @@ public partial class EducationClubContext : DbContext
     
     public virtual DbSet<Attendence> Attendences { get; set; }
     
+    public virtual DbSet<DayOfWeek> DayOfWeeks { get; set; }
+    
     public virtual DbSet<Lesson> Lessons { get; set; }
     
     public virtual DbSet<Role> Roles { get; set; }
@@ -67,18 +69,30 @@ public partial class EducationClubContext : DbContext
                 .HasConstraintName("FK_Attendence_Student");
         });
     
+        modelBuilder.Entity<DayOfWeek>(entity =>
+        {
+            entity.ToTable("DayOfWeek");
+
+            entity.Property(e => e.Name).HasMaxLength(50);
+        });
+        
         modelBuilder.Entity<Lesson>(entity =>
         {
             entity.ToTable("Lesson");
-            
+
             entity.Property(e => e.AdditionalClassId).HasColumnName("AdditionalClass_Id");
-            entity.Property(e => e.DateOfFinish).HasMaxLength(50);
-            entity.Property(e => e.DateOfStart).HasMaxLength(50);
+            entity.Property(e => e.DayOfWeekId).HasColumnName("DayOfWeek_Id");
+            entity.Property(e => e.TimeFinish).HasPrecision(0);
+            entity.Property(e => e.TimeStart).HasPrecision(0);
             entity.Property(e => e.Title).HasMaxLength(50);
-    
+
             entity.HasOne(d => d.AdditionalClass).WithMany(p => p.Lessons)
                 .HasForeignKey(d => d.AdditionalClassId)
                 .HasConstraintName("FK_Lesson_AdditionalClass");
+
+            entity.HasOne(d => d.DayOfWeek).WithMany(p => p.Lessons)
+                .HasForeignKey(d => d.DayOfWeekId)
+                .HasConstraintName("FK_Lesson_DayOfWeek");
         });
     
         modelBuilder.Entity<Role>(entity =>
