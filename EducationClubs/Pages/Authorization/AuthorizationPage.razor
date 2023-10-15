@@ -5,6 +5,7 @@
 @inject EducationClubContext educationClubContext
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject BehaviourService BehaviourService
 
 <div class="Content">
     <div class="CardAuth">
@@ -29,7 +30,7 @@
 </div>
 
 @code {
-    private String email = "iamTeacher7";
+    private String email = "tutor@mail.ru";
     private String password = "123";
 
     protected override void OnInitialized()
@@ -45,13 +46,14 @@
 
     public async void isValidate()
     {
-        var userdb = await educationClubContext.Accounts.FirstOrDefaultAsync(x => x.Login == email && x.Password == password);
+        var accountDb = await educationClubContext.Accounts.FirstOrDefaultAsync(x => x.Login == email && x.Password == password);
 
-        if (userdb == null)
+        if (accountDb == null)
         {
             Snackbar.Add("Пользователь не существует", Severity.Error, config => { config.ShowCloseIcon = false; });
             return;
         }
+        BehaviourService.authAccount = accountDb;
         NavigationManager.NavigateTo("/tutor/main");
     }
 

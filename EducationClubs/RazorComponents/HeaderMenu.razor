@@ -1,4 +1,8 @@
-﻿
+﻿@using Microsoft.EntityFrameworkCore
+@inject BehaviourService BehaviourService
+@inject EducationClubContext EducationClubContext
+@using EducationClubs.ScaffoldedModels;
+
 <div class="menu">
     <div class="box1">
         <div>
@@ -13,8 +17,8 @@
 
     <div class="box-profile">
         <div>
-            <p>First Name</p>
-            <p>Last Name</p>
+            <p>@_tutor.Name</p>
+            <p>@_tutor.Surname</p>
         </div>
         
         <div>
@@ -25,5 +29,20 @@
 </div>
 
 @code {
+    private Tutor _tutor = new Tutor();
     private bool isTutor = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (BehaviourService.authAccount != null)
+        {
+            _tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(tutor => tutor.AccountId == BehaviourService.authAccount.Id);
+        }
+        else
+        {
+            _tutor.Name = "First Name";
+            _tutor.Surname = "Last Name";
+        }
+    }
+
 }
