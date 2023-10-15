@@ -1,5 +1,6 @@
 using EducationClubs.Pages.TutorPages;
 using EducationClubs.RazorComponents;
+using EducationClubs.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSingleton<BehaviourService>();
 builder.Services.AddSingleton<TutorMainPage>();
 builder.Services.AddSingleton<HeaderMenu>();
 
