@@ -1,6 +1,6 @@
-﻿@page "/"
-@using EducationClubs.ScaffoldedModels
+﻿@page "/main"
 @inject EducationClubContext educationClubContext
+
 
 <PageTitle>Index</PageTitle>
 
@@ -16,12 +16,12 @@
     
     public void add()
     {
-        Account account = new Account();
-        account.Login = "iamTeacher1";
-        account.Password = "123";
-        account.RoleId = 2;
-            
-        educationClubContext.Accounts.Add(account);
-        educationClubContext.SaveChangesAsync();
+        // Account account = new Account();
+        // account.Login = "iamTeacher7";
+        // account.Password = "123";
+        // account.RoleId = 2;
+        //     
+        // educationClubContext.Accounts.Add(account);
+        // educationClubContext.SaveChangesAsync();
     }
 }

@@ -1,0 +1,58 @@
+﻿@page "/"
+@using EducationClubs.ScaffoldedModels
+@using Microsoft.EntityFrameworkCore
+@using MudBlazor
+@inject EducationClubContext educationClubContext
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<div class="Content">
+    <div class="CardAuth">
+        <div class="cardRow">
+            <p id="title">Sign in</p>
+        </div>
+        
+        <div class="cardRow">
+            <p>Email</p>
+            <input class="inputCard" @bind-value="@email"/>
+        </div>
+        
+        <div class="cardRow">
+            <p>Password</p>
+            <input class="password" type="password" @bind-value="@password"/>
+        </div>
+        
+        <div class="cardRow">
+            <button class="btnSign" @onclick="@isValidate">Войти</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private String email = "iamTeacher7";
+    private String password = "123";
+
+    protected override void OnInitialized()
+    {
+        initSnakebarPosition(Defaults.Classes.Position.BottomCenter);
+    }
+    
+    void initSnakebarPosition(string position)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = position;
+    }
+
+    public async void isValidate()
+    {
+        var userdb = await educationClubContext.Accounts.FirstOrDefaultAsync(x => x.Login == email && x.Password == password);
+
+        if (userdb == null)
+        {
+            Snackbar.Add("Пользователь не существует", Severity.Error, config => { config.ShowCloseIcon = false; });
+            return;
+        }
+        NavigationManager.NavigateTo("/tutor/main");
+    }
+
+}
