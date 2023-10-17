@@ -1,0 +1,71 @@
+﻿@using EducationClubs.ScaffoldedModels;
+@inject EducationClubContext EducationClubContext
+@page "/tutor/lesson"
+
+<MudPaper>
+    <MudAppBar Style="margin-top: 2%; background-color: white; display: block; width: 90%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
+        <MudButton>
+            Главная страница
+        </MudButton>
+    </MudAppBar>
+    <MudPaper Style="display: flex; position: absolute; left:15%; top: 15%; align-self: center; width: 70%; height: 8%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right">
+        <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 30%; height: 60%; text-align:center;">
+            Начало
+        </MudContainer>
+        <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 30%; height: 60%; text-align:center;">
+            Конец
+        </MudContainer>
+        <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px">Добавить ученика</MudButton>
+    </MudPaper>
+    <MudPaper Style="position: absolute; left:15%; top: 25%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
+        <MudTable Items="@Elements" Hover="@hover" Filter="new Func<Student,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" >
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Тут типо название занятия</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Фамилия</MudTh>
+                <MudTh>Имя</MudTh>
+                <MudTh>Отчество</MudTh>
+                <MudTh>Присутствие</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Surname">@context.Surname</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Patronymic">@context.Patronymic</MudTd>
+                <MudTd DataLabel="IsAttend"><input type="checkbox"></MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 5 }" />
+            </PagerContent>
+        </MudTable>
+    </MudPaper>
+</MudPaper>
+
+@code {
+    private bool hover = true;
+    private string searchString = "";
+    private Student selectedItem = new Student();
+    private HashSet<Student> selectedItems = new HashSet<Student>();
+
+    private IEnumerable<Student> Elements = new List<Student>();
+
+    protected override void OnInitialized()
+    {
+        Elements = EducationClubContext.Students.ToList();
+    }
+
+    private bool FilterFuncOne(Student element) => FilterFunc(element, searchString);
+
+    private bool FilterFunc(Student element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Surname.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+}
