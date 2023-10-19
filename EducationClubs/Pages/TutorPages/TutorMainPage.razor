@@ -1,7 +1,44 @@
 ﻿@page "/tutor/main"
+@using EducationClubs.ScaffoldedModels;
+@using Microsoft.EntityFrameworkCore
+@inject EducationClubContext EducationClubContext
+@inject BehaviourService BehaviourService
 
 <HeaderMenu/>
 
+@if (_listLesson != null)
+{
+    //<p>@_listLesson[0].Title.ToString()</p>    
+}
+else
+{
+    <p>Пусто</p>    
+}
+
 @code {
+    private List<AdditionalClass> _listLesson = new List<AdditionalClass>();
+    private Tutor tutor = new Tutor();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
     
+        GetTutor();
+        Thread.Sleep(1000);
+        if (tutor.Id != 0)
+        {
+           GetAdditionalClass();
+        }
+    }
+
+    async void GetAdditionalClass()
+    {
+        _listLesson = await EducationClubContext.AdditionalClasses.Where(x => x.TutorId.Value == tutor.Id).ToListAsync();    
+    }
+
+    async void GetTutor()
+    {
+        tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(x => x.AccountId.Value == BehaviourService.authAccount.Id);
+    }
+
 }

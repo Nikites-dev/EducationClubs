@@ -1,7 +1,7 @@
 .Content {
     position: absolute;
     display: flex;
-    background: #0a53be;
+    background: #dcdcdc;
     top: 0;
     left: 0;
     right: 0;
@@ -25,7 +25,7 @@
 .cardRow {
     display: flex;
     flex-direction: column;
-    background: red;
+    background: #e5e5e5;
     margin: 10px;
 }
 
