@@ -1,0 +1,42 @@
+﻿@page "/director/main"
+
+
+<MudPaper>
+    <MudAppBar Style="margin-top: 2%; background-color: white; display: block; width: 90%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
+        <MudButton>
+            Главная страница
+        </MudButton>
+        <MudButton>
+            Преподаватели
+        </MudButton>
+        <MudButton>
+            Кружки
+        </MudButton>
+        <MudButton>
+            Ученики
+        </MudButton>
+    </MudAppBar>
+    <MudPaper Style="display: flex; position: absolute; left:15%; top: 15%; align-self: center; width: 70%; height: 8%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right">
+        <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 30%; height: 60%; text-align:center;">
+            Учителя
+        </MudContainer>
+    </MudPaper>
+    <MudPaper Style="position: absolute; left:15%; top: 25%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
+        <label>Средняя посещаемость по месяцам</label>
+        <div>
+            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+        </div>
+    </MudPaper>
+</MudPaper>
+
+@code {
+    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "United States", Data = new double[] { 40, 20, 25, 27, 46, 60, 48, 80, 15 } },
+        new ChartSeries() { Name = "Germany", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31 } },
+        new ChartSeries() { Name = "Sweden", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 18 } },
+    };
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
+}
