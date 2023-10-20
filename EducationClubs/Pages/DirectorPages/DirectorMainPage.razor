@@ -1,0 +1,84 @@
+﻿@page "/director/main"
+
+@using EducationClubs.ScaffoldedModels;
+@inject EducationClubContext EducationClubContext
+
+<MudPaper>
+    <MudAppBar Style="margin-top: 2%; background-color: white; display: block; width: 90%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
+        <MudButton>
+            Главная страница
+        </MudButton>
+        <MudButton>
+            Преподаватели
+        </MudButton>
+        <MudButton>
+            Кружки
+        </MudButton>
+        <MudButton>
+            Ученики
+        </MudButton>
+    </MudAppBar>
+    <MudPaper Style="display: flex; position: absolute; left:15%; top: 15%; align-self: center; width: 70%; height: 10%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right">
+@*        <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 30%; height: 60%; text-align:center;">
+            Учителя
+        </MudContainer>*@
+        <div style=" margin-right: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
+            <div>
+                Учителя
+            </div>
+            <div style="text-align:center; ">
+                <label style="color: rgba(118, 230, 153, 1)">@tutors</label>
+            </div>
+        </div>
+        <div style=" margin-right: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
+            <div>
+                Ученики
+            </div>
+            <div style="text-align:center; margin-right: 5px">
+                <label style="color: rgba(242, 105, 159, 1)">@students</label>
+            </div>
+        </div>
+        <div style=" margin-right: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
+            <div>
+                Кружки
+            </div>
+            <div style="text-align:center; margin-right: 5px">
+                <label style="color: rgba(245, 166, 35, 1)">@classes</label>
+            </div>
+        </div>
+    </MudPaper>
+    <MudPaper Style="position: absolute; left:15%; top: 28%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; text-align:center">
+        <div>
+            <MudText style="font-size: 24px">Средняя посещаемость по месяцам</MudText>
+            <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+        </div>
+    </MudPaper>
+</MudPaper>
+
+@code {
+    private IEnumerable<Student> ListOfStudents = new List<Student>();
+    private int students;
+    private IEnumerable<AdditionalClass> ListOfClasses = new List<AdditionalClass>();
+    private int classes;
+    private IEnumerable<Tutor> ListOfTutors = new List<Tutor>();
+    private int tutors;
+
+    protected override void OnInitialized()
+    {
+        ListOfStudents = EducationClubContext.Students.ToList();
+        students = ListOfStudents.Count();
+        ListOfClasses = EducationClubContext.AdditionalClasses.ToList();
+        classes = ListOfClasses.Count();
+        ListOfTutors = EducationClubContext.Tutors.ToList();
+        tutors = ListOfTutors.Count();
+    }
+    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "United States", Data = new double[] { 40, 20, 25, 27, 46, 60, 48, 80, 15 } },
+        new ChartSeries() { Name = "Germany", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31 } },
+        new ChartSeries() { Name = "Sweden", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 18 } },
+    };
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
+}
