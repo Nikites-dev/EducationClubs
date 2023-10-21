@@ -6,9 +6,9 @@
 
 <HeaderMenu/>
 
-@if (_listLesson != null)
+@if (_listLesson.Count != 0)
 {
-    //<p>@_listLesson[0].Title.ToString()</p>    
+    <p>@_listLesson[0].Title.ToString()</p>    
 }
 else
 {
@@ -19,24 +19,21 @@ else
     private List<AdditionalClass> _listLesson = new List<AdditionalClass>();
     private Tutor tutor = new Tutor();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-    
-        GetTutor();
-        Thread.Sleep(1000);
-        if (tutor.Id != 0)
-        {
-           GetAdditionalClass();
-        }
+        await GetTutor();
+        // добавить проверку header true init
+        await GetAdditionalClass();
+        
+        // await Task.Run(() => GetAdditionalClass());
     }
 
-    async void GetAdditionalClass()
+    async Task GetAdditionalClass()
     {
-        _listLesson = await EducationClubContext.AdditionalClasses.Where(x => x.TutorId.Value == tutor.Id).ToListAsync();    
+        _listLesson = await EducationClubContext.AdditionalClasses.Where(xo => xo.TutorId == tutor.Id).ToListAsync();    
     }
 
-    async void GetTutor()
+    async Task GetTutor()
     {
         tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(x => x.AccountId.Value == BehaviourService.authAccount.Id);
     }
