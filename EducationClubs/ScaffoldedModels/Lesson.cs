@@ -6,9 +6,9 @@ public partial class Lesson
 
     public string? Title { get; set; }
 
-    public TimeSpan? TimeStart { get; set; }
+    public DateTime? TimeStart { get; set; }
 
-    public TimeSpan? TimeFinish { get; set; }
+    public DateTime? TimeFinish { get; set; }
 
     public int? AdditionalClassId { get; set; }
 

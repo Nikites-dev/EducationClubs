@@ -27,11 +27,12 @@ public partial class EducationClubContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("Cyrillic_General_CI_AS");
+        
         modelBuilder.Entity<Account>(entity =>
         {
             entity.ToTable("Account");
-    
-            // entity.Property(e => e.Id).ValueGeneratedNever();
+            
             entity.Property(e => e.Login).HasMaxLength(50);
             entity.Property(e => e.Password).HasMaxLength(50);
             entity.Property(e => e.RoleId).HasColumnName("Role_Id");
@@ -82,8 +83,8 @@ public partial class EducationClubContext : DbContext
 
             entity.Property(e => e.AdditionalClassId).HasColumnName("AdditionalClass_Id");
             entity.Property(e => e.DayOfWeekId).HasColumnName("DayOfWeek_Id");
-            entity.Property(e => e.TimeFinish).HasPrecision(0);
-            entity.Property(e => e.TimeStart).HasPrecision(0);
+            entity.Property(e => e.TimeFinish).HasColumnType("datetime");
+            entity.Property(e => e.TimeStart).HasColumnType("datetime");
             entity.Property(e => e.Title).HasMaxLength(50);
 
             entity.HasOne(d => d.AdditionalClass).WithMany(p => p.Lessons)
