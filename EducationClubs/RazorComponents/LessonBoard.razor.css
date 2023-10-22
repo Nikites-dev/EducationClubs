@@ -1,0 +1,62 @@
+﻿.menu-tool-lesson {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: end;
+}
+
+#container-lesson {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    background: #f4f7fe;
+    flex-direction: row;
+    flex: 50%;
+}
+
+.item {
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.menu-tool-lesson {
+    display: flex;
+    justify-content: end;
+    padding-right: 30px;
+    align-items: center;
+    margin: auto;
+    height: 100px;
+    width: 50%;
+    color: #4318FF;
+    font-weight: bolder;
+    font-size: 16px;
+}
+
+hr.solid {
+    border-left: 1px solid #000;
+    height: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.btn-nav {
+    background: #4318FF;
+    padding: 10px;
+    margin: 3px;
+    font-size: 14px;
+    border-radius: 10px;
+    color: white;
+}
+
+.content-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    color: #dbdde8;
+}

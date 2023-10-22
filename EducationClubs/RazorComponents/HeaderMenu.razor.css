@@ -6,7 +6,7 @@
 .menu {
     display: flex;
     height: 60px;
-    background: #57986e;
+    background: #f8f4ff;
     flex-direction: row;
     align-items: center;
     padding-left: 10px;
@@ -16,7 +16,7 @@
 
 .box-profile {
     display: flex;
-    background: red;
+    background: #c5c5d3;
     flex-direction: row;
     align-items: center;
 }
@@ -28,6 +28,6 @@
 
 .nav-btns {
     float: left;
-    background: palevioletred;
+    background: #ddddff;
     margin-left: 10px;
 }

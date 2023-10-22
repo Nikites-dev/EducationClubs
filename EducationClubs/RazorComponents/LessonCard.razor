@@ -1,0 +1,61 @@
+﻿@using EducationClubs.ScaffoldedModels
+@using Microsoft.EntityFrameworkCore
+@using System.Threading
+@using MongoDB.Bson
+@inject EducationClubContext EducationClubContext
+
+<div class="cardLesson">
+    @if (ItemLesson.Count != 0)
+    {
+        <div class="header-card">
+            <p class="day-of-week">@Enum.GetName(typeof(System.DayOfWeek), ItemLesson[0].DayOfWeekId).ToString()</p>
+            <p class="day-of-week">@GetShortDate(ItemLesson[0].TimeStart)</p>
+        </div>
+        <hr class="solid">
+        
+        <div class="list-lessons">
+
+            @foreach(var lesson in ItemLesson)
+            {
+                <div class="lesson-item">
+                    <div style="width: 90px" class="lesson-name">@GetShortTime(lesson.TimeStart)</div>
+                    <div class="lesson-name">@GetLessonTitle(lesson.AdditionalClassId ?? default(int)).ToString()</div>
+                    <div style="width: 90px" class="lesson-name">?</div>
+                </div>
+                <hr class="solid2">
+            }
+        </div>
+    }
+    else
+    {
+        <div class="content-empty">
+            <p>Занятий на эту дату нет :(</p>
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public List<Lesson> ItemLesson { get; set; }
+
+    [Parameter]
+    public List<AdditionalClass> AddClassList { get; set; }
+
+    String GetShortTime(DateTime? dateTime)
+    {
+        DateTime convertDate = (DateTime) dateTime;
+        return convertDate.ToShortTimeString();
+    }
+    
+    String GetShortDate(DateTime? dateTime)
+    {
+        DateTime convertDate = (DateTime) dateTime;
+        return convertDate.ToString("dd.MM");
+    }
+
+    String GetLessonTitle(int addClassid)
+    {
+        return AddClassList.Where(x => x.Id == addClassid).FirstOrDefault().Title.ToString();
+    }
+}

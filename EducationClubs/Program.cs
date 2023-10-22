@@ -17,6 +17,9 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<BehaviourService>();
 builder.Services.AddSingleton<TutorMainPage>();
 builder.Services.AddSingleton<HeaderMenu>();
+builder.Services.AddSingleton<LessonCard>();
+builder.Services.AddSingleton<LessonBoard>();
+builder.Services.AddSingleton<DateTimeService>();
 
 builder.Services.AddMudServices();
 builder.Services.AddMudServices(config =>

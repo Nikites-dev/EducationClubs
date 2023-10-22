@@ -1,0 +1,93 @@
+﻿@using System.Globalization
+@using System.Threading
+@using EducationClubs.ScaffoldedModels;
+@using Microsoft.EntityFrameworkCore
+@using MudBlazor.Extensions
+@inject EducationClubContext EducationClubContext
+
+<div class="menu-tool-lesson">
+    <button class="btn-nav" @onclick="() => MoveListLessonOfWeeks(false)">назад</button>
+    <button @onclick="@GetListLessonOfWeeks">@GetShortDate(firstDayOfWeek)</button>
+    <hr class="solid">
+    <button @onclick="@GetListLessonOfWeeks">@GetShortDate(lastDayOfWeek)</button>
+    <button class="btn-nav" @onclick="() => MoveListLessonOfWeeks(true)">вперед</button>
+</div>
+
+@if (listLesson.Count != 0)
+{
+    <div id="container-lesson">
+        <div class="row-v">
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(1)"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(2)"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(3)"/></div>
+        </div>
+   
+        <div class="row-v">
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(4)"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(5)"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(6)"/></div>
+        </div>
+    </div>
+} else
+{
+    <div class="content-empty">
+        <p>Расписания на эту дату нет :(</p>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<Lesson> listLesson { get; set; }
+
+    [Parameter]
+    public Tutor authTutor { get; set; }
+
+    [Parameter]
+    public List<AdditionalClass> AddClassList { get; set; }
+    
+    private int dateMove = 7;
+    private DateTime crntTime = DateTime.Now;
+    private DateTime firstDayOfWeek = DateTime.Now;
+    private DateTime lastDayOfWeek = DateTime.Now;
+
+    protected override async Task OnInitializedAsync()
+    {
+        firstDayOfWeek = System.DateTime.Now.StartOfWeek(System.DayOfWeek.Monday);
+        lastDayOfWeek = firstDayOfWeek.AddDays(6);
+    }
+
+    async Task MoveListLessonOfWeeks(bool isNext)
+    {
+        dateMove = isNext ? 7 : -7;
+        firstDayOfWeek = firstDayOfWeek.AddDays(dateMove);
+        lastDayOfWeek = lastDayOfWeek.AddDays(dateMove);
+        
+        await GetListLessonOfWeeks();
+    }
+    
+    async Task GetListLessonOfWeeks()
+    {
+        listLesson = await EducationClubContext.Lessons.Where(x => 
+            x.TimeStart > firstDayOfWeek &&
+            x.TimeFinish < lastDayOfWeek &&
+            x.AdditionalClass.Tutor.Id == authTutor.Id
+            ).ToListAsync();
+    }
+
+    List<Lesson> GetLessonsOfWeek(int weekId)
+    {
+        return listLesson.Where(x => x.DayOfWeekId == weekId).ToList();
+    }
+    
+    String GetShortTime(DateTime? dateTime)
+    {
+        DateTime convertDate = (DateTime) dateTime;
+        return convertDate.ToShortTimeString();
+    }
+    
+    String GetShortDate(DateTime? dateTime)
+    {
+        DateTime convertDate = (DateTime) dateTime;
+        return convertDate.ToString("dd.MM");
+    }
+}
