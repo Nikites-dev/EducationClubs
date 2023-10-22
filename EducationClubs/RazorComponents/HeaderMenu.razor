@@ -15,17 +15,19 @@
         </div>
     </div>
 
-    <div class="box-profile">
-        <div>
-            <p>@_tutor.Name</p>
-            <p>@_tutor.Surname</p>
-        </div>
+    @if (_tutor.AccountId != 0 || _tutor.AccountId != null)
+    {
+        <div class="box-profile">
+            <div>
+                <p>@_tutor.Name</p>
+                <p>@_tutor.Surname</p>
+            </div>
         
-        <div>
-            <img alt="img"/>
+            <div>
+                <img alt="img"/>
+            </div>
         </div>
-    </div>
-    
+    }   
 </div>
 
 @code {
@@ -36,13 +38,18 @@
     {
         if (BehaviourService.authAccount != null)
         {
-            _tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(tutor => tutor.AccountId == BehaviourService.authAccount.Id);
+            await GetTutor();
         }
         else
         {
             _tutor.Name = "First Name";
             _tutor.Surname = "Last Name";
         }
+    }
+
+    async Task GetTutor()
+    {
+        _tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(tutor => tutor.AccountId == BehaviourService.authAccount.Id);
     }
 
 }

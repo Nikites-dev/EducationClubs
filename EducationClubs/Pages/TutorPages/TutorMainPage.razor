@@ -1,44 +1,71 @@
 ﻿@page "/tutor/main"
 @using EducationClubs.ScaffoldedModels;
 @using Microsoft.EntityFrameworkCore
+@using System.Globalization
+@using System.Linq
+@using System.Threading
+@using Microsoft.VisualBasic
+@using MudBlazor.Extensions
 @inject EducationClubContext EducationClubContext
 @inject BehaviourService BehaviourService
 
-<HeaderMenu/>
-
-@if (_listLesson != null)
+@if (isHeadermenuInit)
 {
-    //<p>@_listLesson[0].Title.ToString()</p>    
+    <HeaderMenu/>    
 }
-else
-{
-    <p>Пусто</p>    
-}
+<div class="board">
+    @if (isLessonBoardInit)
+    {
+        <LessonBoard listLesson="_listLesson" AddClassList="_listAdditionalClasses" authTutor="tutor"/>
+    }
+</div>
 
 @code {
-    private List<AdditionalClass> _listLesson = new List<AdditionalClass>();
+    private List<AdditionalClass> _listAdditionalClasses = new List<AdditionalClass>();
+    public List<Lesson> _listLesson = new List<Lesson>(); 
     private Tutor tutor = new Tutor();
+    private bool isHeadermenuInit = false;
+    private bool isLessonBoardInit = false;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
+    private DateTime crntTime = DateTime.Now;
+    private DateTime firstDayOfWeek = DateTime.Now;
+    private DateTime lastDayOfWeek = DateTime.Now;
     
-        GetTutor();
-        Thread.Sleep(1000);
-        if (tutor.Id != 0)
-        {
-           GetAdditionalClass();
-        }
-    }
-
-    async void GetAdditionalClass()
+    protected override async Task OnInitializedAsync()
     {
-        _listLesson = await EducationClubContext.AdditionalClasses.Where(x => x.TutorId.Value == tutor.Id).ToListAsync();    
+        firstDayOfWeek = System.DateTime.Now.StartOfWeek(System.DayOfWeek.Monday);
+        lastDayOfWeek = firstDayOfWeek.AddDays(6);
+        
+        await GetTutor();
+        await GetAdditionalClass();
+        await GetListLessonOfWeek();
+
+        isHeadermenuInit = true;
+        isLessonBoardInit = true;
+
+    // await Task.Run(() => GetAdditionalClass());
+    }
+    
+   
+
+    async Task GetAdditionalClass()
+    {
+        _listAdditionalClasses = await EducationClubContext.AdditionalClasses.Where(xo => xo.TutorId == tutor.Id).ToListAsync();
     }
 
-    async void GetTutor()
+    async Task GetTutor()
     {
         tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(x => x.AccountId.Value == BehaviourService.authAccount.Id);
     }
-
+    
+    async Task GetListLessonOfWeek()
+    {
+        _listLesson = await EducationClubContext.Lessons.Where(x => 
+            x.TimeStart >= firstDayOfWeek &&
+            x.TimeFinish <= lastDayOfWeek &&
+            x.AdditionalClass.Tutor.Id == tutor.Id
+            ).ToListAsync();
+    }
 }
+
+
