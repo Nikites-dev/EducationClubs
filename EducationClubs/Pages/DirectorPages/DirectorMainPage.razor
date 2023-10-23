@@ -20,8 +20,8 @@
         </MudButton>
     </MudAppBar>
     <MudPaper Style="display: flex; position: absolute; left:15%; top: 15%; align-self: center; width: 70%; height: 10%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right">
-        <MudDatePicker Style="width: 25%; margin-left: 5px" Editable="true" Date="date" ImmediateText="true" Placeholder="day.month.year" DateFormat="@dateFormat" TextChanged="DatePickerTextChanged" Clearable="true" />
-        <div style=" margin-right: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
+        <MudDatePicker Style="width: 25%; margin: 8px; " Editable="true" Date="date" ImmediateText="true" Placeholder="день.месяц.год" DateFormat="@dateFormat" TextChanged="DatePickerTextChanged" Clearable="true" />
+        <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
             <div>
                 Учителя
             </div>
@@ -29,7 +29,7 @@
                 <label style="color: rgba(118, 230, 153, 1)">@tutors</label>
             </div>
         </div>
-        <div style=" margin-right: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
+        <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
             <div>
                 Ученики
             </div>
@@ -37,7 +37,7 @@
                 <label style="color: rgba(242, 105, 159, 1)">@students</label>
             </div>
         </div>
-        <div style=" margin-right: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
+        <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
             <div>
                 Кружки
             </div>
@@ -45,11 +45,12 @@
                 <label style="color: rgba(245, 166, 35, 1)">@classes</label>
             </div>
         </div>
+        
     </MudPaper>
     <MudPaper Style="position: absolute; left:15%; top: 28%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; text-align:center">
         <div>
             <MudText style="font-size: 24px">Сегодняшняя посещаемость кружков</MudText>
-            <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Bottom" Width="300px" Height="300px"
+            <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Bottom" Width="400px" Height="400px"
                       InputData="@data" InputLabels="@labels">
             </MudChart>
         </div>
@@ -70,7 +71,6 @@
     public List<int> dataList = new List<int>();
     public List<string> labelsList = new List<string>();
     public string[] labels = new string[] { };
-
     public double[] data = new double[] { };
 
     protected override void OnInitialized()
