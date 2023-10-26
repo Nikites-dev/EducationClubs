@@ -18,13 +18,11 @@
     @if (_tutor.AccountId != 0 || _tutor.AccountId != null)
     {
         <div class="box-profile">
-            <div>
-                <p>@_tutor.Name</p>
-                <p>@_tutor.Surname</p>
-            </div>
-        
-            <div>
-                <img alt="img"/>
+            <p class="title-text">@_tutor.Name</p>
+            <p class="title-text">@_tutor.Surname</p>
+           
+            <div class="img-circle">
+                <img alt="img" src="https://i5.imageban.ru/out/2023/03/07/1ef9c562b15e251bad06d9eb11cc1afe.jpg"/>    
             </div>
         </div>
     }   
