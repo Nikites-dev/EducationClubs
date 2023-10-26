@@ -9,6 +9,8 @@
 @inject EducationClubContext EducationClubContext
 @inject BehaviourService BehaviourService
 
+<div class="background">&nbsp;</div>
+
 @if (isHeadermenuInit)
 {
     <HeaderMenu/>    
@@ -19,6 +21,8 @@
         <LessonBoard listLesson="_listLesson" AddClassList="_listAdditionalClasses" authTutor="tutor"/>
     }
 </div>
+
+
 
 @code {
     private List<AdditionalClass> _listAdditionalClasses = new List<AdditionalClass>();

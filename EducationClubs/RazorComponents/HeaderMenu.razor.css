@@ -3,10 +3,17 @@
     margin: 0;
 }
 
-.menu {
+.app {
+    color: white;
+    font-size: 20px;
+    font-weight: normal;
+    font-family: Comfortaa;
+}
+
+.menuHeader {
     display: flex;
     height: 60px;
-    background: #f8f4ff;
+    background: #4318ff;
     flex-direction: row;
     align-items: center;
     padding-left: 10px;
@@ -29,5 +36,5 @@
 .nav-btns {
     float: left;
     background: #ddddff;
-    margin-left: 10px;
+    margin-left: 30px;
 }

@@ -20,6 +20,7 @@ builder.Services.AddSingleton<HeaderMenu>();
 builder.Services.AddSingleton<LessonCard>();
 builder.Services.AddSingleton<LessonBoard>();
 builder.Services.AddSingleton<DateTimeService>();
+builder.Services.AddSingleton<CreateLessonPage>();
 
 builder.Services.AddMudServices();
 builder.Services.AddMudServices(config =>

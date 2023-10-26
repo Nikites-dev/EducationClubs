@@ -1,17 +1,17 @@
 ﻿@using Microsoft.EntityFrameworkCore
 @inject BehaviourService BehaviourService
 @inject EducationClubContext EducationClubContext
+@inject NavigationManager NavigationManager
 @using EducationClubs.ScaffoldedModels;
 
-<div class="menu">
+<div class="menuHeader">
     <div class="box1">
         <div>
-            <p>EducatucationClub</p>    
+            <p class="app">Educatucation Club</p>    
         </div>
         
         <div class="nav-btns">
-            <button class="btnMenu">Главная</button>    
-            <button class="btnMenu">Кружки</button>
+            <MudButton Variant="Variant.Filled"  Color="Color.Transparent" StartIcon="@Icons.Material.Filled.Add" @onclick="@OpenNewLessonPage">Занятие</MudButton>
         </div>
     </div>
 
@@ -51,5 +51,10 @@
     {
         _tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(tutor => tutor.AccountId == BehaviourService.authAccount.Id);
     }
-
+    
+    
+    void OpenNewLessonPage()
+    {
+        NavigationManager.NavigateTo("/tutor/lesson/new");
+    }
 }
