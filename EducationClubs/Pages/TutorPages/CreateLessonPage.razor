@@ -2,8 +2,67 @@
 @inject EducationClubContext EducationClubContext
 @page "/tutor/lesson/new"
 
-<p>New lesson page</p>
+<HeaderMenu/>
+
+<div class="content-lesson">
+    <div class="box-title">
+        <p class="content-title">Добавить занятие</p>
+    </div>
+    <div class="box-content">
+        <div class="box-content-row">
+            <div id="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Draw" Color="Color.Dark"/>
+                    <p>Кружок:</p>
+                </div>
+
+                <MudMenu FullWidth="true">
+                    <ActivatorContent>
+                        <MudChip Icon="@Icons.Material.Filled.ArrowDropDown" Color="Color.Primary">Кружок</MudChip>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem>Profile</MudMenuItem>
+                        <MudMenuItem>Theme</MudMenuItem>
+                        <MudMenuItem>Usage</MudMenuItem>
+                        <MudMenuItem>Sign Out</MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </div>
+            <div>
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Draw" Color="Color.Dark"/>
+                    <p>День недели:</p>
+                </div>
+
+               <MudSelect Dense="true" T="string" Label="Coffee" Variant="Variant.Outlined">
+                   <MudSelectItem Value="@("Tyrannosaur")" />
+                   <MudSelectItem Value="@("Triceratops")" />
+                   <MudSelectItem Value="@("Henon Rex")" />
+               </MudSelect>
+            </div>
+
+
+            <div class="box-picker">
+                <MudStack>
+                    <MudDateRangePicker @ref="_picker" Label="Период проведения:" @bind-DateRange="_dateRange" AutoClose="true">
+                        <PickerActions>
+                            <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Clear</MudButton>
+                            <MudButton OnClick="@(() => _picker.Close(false))">Cancel</MudButton>
+                            <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
+                        </PickerActions>
+                    </MudDateRangePicker>
+                </MudStack>
+            </div>
+            
+                    <MudFab Label="Bookmark" Color="@Color.Dark"/>
+            
+
+        </div>
+
+    </div>
+</div>
 
 @code {
-    
+    private MudDateRangePicker _picker;
+    private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
 }

@@ -5,8 +5,10 @@
 }
 
 .cardLesson {
-    width: 500px;
-    height: 250px;
+    display: flex;
+    min-height: 180px;
+    flex-direction: column;
+    width: 400px;
     background: white;
     margin: 10px;
     border-radius: 20px;
@@ -25,16 +27,17 @@
 }
 
 .list-lessons {
-    margin: 10px;
+    margin-left: 10px;
     font-weight: bolder;
     color: #2b3674;
 }
 
 .lesson-item {
     display: flex;
+    align-items: center;
     flex-direction: row;
     justify-content: space-between;
-    margin-top: 17px;
+    height: 23px;
 }
 
 hr.solid {
