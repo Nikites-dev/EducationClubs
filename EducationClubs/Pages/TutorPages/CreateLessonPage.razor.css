@@ -3,16 +3,22 @@
     padding: 0;
 }
 
-
 .content-lesson {
     display: flex;
     align-items: center;
     margin: auto;
     flex-direction: column;
-    background: darkgray;
+    background: #ffffff;
     height: 500px;
-    width: 60vw;
+    width: 30vw;
     margin-top: 60px;
+    padding: 18px;
+    border: #dce1e6 solid 1px;
+    border-radius: 20px;
+    
+    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
 }
 
 .box-title {
@@ -26,9 +32,7 @@
     font-size: 20px;
 }
 
-
 .box-content {
-    background: #ffe5e5;
     width: 100%;
     height: 100%;
 }
@@ -36,6 +40,7 @@
 .box-content-row {
     display: flex;
     flex-direction: column;
+    margin-top: 10px;
 }
 
 .box-horizontal {
@@ -44,11 +49,6 @@
     align-items: center;
 }
 
-#box-content-row-box {
-    display: flex;
-    flex-direction: row;
-}
-
-.box-picker {
-    width: 40%;
+.margin-box {
+    margin: 10px;
 }
