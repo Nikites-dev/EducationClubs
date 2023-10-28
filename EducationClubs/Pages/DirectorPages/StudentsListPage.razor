@@ -1,0 +1,70 @@
+﻿@page "/director/students"
+
+@using EducationClubs.ScaffoldedModels;
+@using System.Globalization;
+@inject EducationClubContext EducationClubContext
+
+<MudPaper>
+    <MudAppBar Style="margin-top: 2%; background-color: white; display: block; width: 90%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
+        <MudButton>
+            Главная страница
+        </MudButton>
+        <MudButton>
+            Преподаватели
+        </MudButton>
+        <MudButton>
+            Кружки
+        </MudButton>
+        <MudButton>
+            Ученики
+        </MudButton>
+    </MudAppBar>
+    <MudPaper Style="position: absolute; left:15%; top: 15%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
+        <MudTable Items="@Elements" Filter="new Func<Student,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem">
+            <ToolBarContent>
+                <MudSpacer />
+                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Фамилия</MudTh>
+                <MudTh>Имя</MudTh>
+                <MudTh>Отчество</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Surname">@context.Surname</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Patronymic">@context.Patronymic</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 8 }" />
+            </PagerContent>
+        </MudTable>
+    </MudPaper>
+</MudPaper>
+
+@code {
+    private string searchString = "";
+    private Student selectedItem = new Student();
+    private HashSet<Student> selectedItems = new HashSet<Student>();
+
+    private IEnumerable<Student> Elements = new List<Student>();
+
+    protected override void OnInitialized()
+    {
+        Elements = EducationClubContext.Students.ToList();
+    }
+
+    private bool FilterFuncOne(Student element) => FilterFunc(element, searchString);
+
+    private bool FilterFunc(Student element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Surname.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+}
+
