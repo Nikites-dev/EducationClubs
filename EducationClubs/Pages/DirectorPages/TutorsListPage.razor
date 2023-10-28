@@ -1,0 +1,74 @@
+﻿@page "/director/tutors"
+
+@using EducationClubs.ScaffoldedModels;
+@using System.Globalization;
+@inject EducationClubContext EducationClubContext
+
+<MudPaper>
+    <MudAppBar Style="margin-top: 2%; background-color: white; display: block; width: 90%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
+        <MudButton Href="/director/main">
+            Главная страница
+        </MudButton>
+        <MudButton Href="/director/tutors">
+            Преподаватели
+        </MudButton>
+        <MudButton Href="/director/clubs">
+            Кружки
+        </MudButton>
+        <MudButton Href="/director/students">
+            Ученики
+        </MudButton>
+    </MudAppBar>
+    <MudPaper Style="position: absolute; left:15%; top: 15%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
+        <MudTable Items="@Elements" Filter="new Func<Tutor,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem">
+            <ToolBarContent>
+                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                <MudSpacer />
+                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px">Добавить учителя</MudButton>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Фамилия</MudTh>
+                <MudTh>Имя</MudTh>
+                <MudTh>Отчество</MudTh>
+                <MudTh>Просмотреть</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Фамилия">@context.Surname</MudTd>
+                <MudTd DataLabel="Имя">@context.Name</MudTd>
+                <MudTd DataLabel="Отчество">@context.Patronymic</MudTd>
+                <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Color="Color.Info">Просмотр</MudButton></MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 8 }" />
+            </PagerContent>
+        </MudTable>
+    </MudPaper>
+</MudPaper>
+
+@code {
+    private string searchString = "";
+    private Tutor selectedItem = new Tutor();
+    private HashSet<Tutor> selectedItems = new HashSet<Tutor>();
+
+    private IEnumerable<Tutor> Elements = new List<Tutor>();
+
+    protected override void OnInitialized()
+    {
+        Elements = EducationClubContext.Tutors.ToList();
+    }
+
+    private bool FilterFuncOne(Tutor element) => FilterFunc(element, searchString);
+
+    private bool FilterFunc(Tutor element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Surname.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Patronymic.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+}
