@@ -9,6 +9,8 @@
 @inject EducationClubContext EducationClubContext
 @inject BehaviourService BehaviourService
 
+<div class="background">&nbsp;</div>
+
 @if (isHeadermenuInit)
 {
     <HeaderMenu/>    
@@ -43,10 +45,9 @@
         isHeadermenuInit = true;
         isLessonBoardInit = true;
 
-    // await Task.Run(() => GetAdditionalClass());
+        BehaviourService.AuthTutor = tutor;
+        // await Task.Run(() => GetAdditionalClass());
     }
-    
-   
 
     async Task GetAdditionalClass()
     {
