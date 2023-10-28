@@ -2,6 +2,7 @@
 @using EducationClubs.ScaffoldedModels;
 @using Microsoft.EntityFrameworkCore
 @using System.Globalization
+@using MongoDB.Driver.Linq
 @inject EducationClubContext EducationClubContext
 @inject BehaviourService BehaviourService
 @inject ISnackbar Snackbar
@@ -154,12 +155,6 @@
             return;
         }
         CheckLessonsIntegrate();
-
-        Lesson lesson = new Lesson();
-        lesson.AdditionalClassId = tutorAdditionalClasses.Where(x => x.Title == crntAddClass).FirstOrDefault().Id;
-        lesson.DayOfWeekId = _listDaysWeek.FindIndex(x => x == crntDayofWeek) + 1;
-        lesson.TimeStart = _dateRange.Start + timeStart;
-        lesson.TimeFinish = _dateRange.End + timeEnd;
     }
 
     bool isLessonValidate()
@@ -194,10 +189,44 @@
 
     void CheckLessonsIntegrate()
     {
-        foreach (var lesson in _listLesson)
+       //  int countDays = (_dateRange.End - _dateRange.Start).TotalDays;;
+        var indxDayOfWeek = _listDaysWeek.FindIndex(x => x == crntDayofWeek) + 1;
+        
+        for (DateTime date = _dateRange.Start.Value; date <= _dateRange.End; date = date.AddDays(1))
         {
+            if ((int)date.DayOfWeek != indxDayOfWeek)
+            {
+                return;
+            }
+
+            var isLessonExist = _listLesson.FirstOrDefault(x =>
+                IsTimeIntersects(x.TimeStart.Value, x.TimeFinish.Value,
+                    date + timeStart.Value, date + timeEnd.Value)) != null;
             
+            if (isLessonExist == false)
+            {
+                Lesson lesson = new Lesson();
+                lesson.Title = crntLessonTitle;
+                lesson.TimeStart = date + timeStart;
+                lesson.TimeFinish = date + timeEnd;
+                lesson.AdditionalClassId = tutorAdditionalClasses.Where(x => x.Title == crntAddClass).FirstOrDefault().Id;
+                lesson.DayOfWeekId = indxDayOfWeek;
+            }
         }
+    }
+
+    public bool IsTimeIntersects(DateTime firstTimeStart, DateTime firstTimeEnd, DateTime secondTimeStart, DateTime secondTimeEnd)
+    {
+        return firstTimeStart < secondTimeEnd && firstTimeEnd > secondTimeStart;
+    }
+    
+    void AddLesson()
+    {
+        Lesson lesson = new Lesson();
+        lesson.AdditionalClassId = tutorAdditionalClasses.Where(x => x.Title == crntAddClass).FirstOrDefault().Id;
+        lesson.DayOfWeekId = _listDaysWeek.FindIndex(x => x == crntDayofWeek) + 1;
+        lesson.TimeStart = _dateRange.Start + timeStart;
+        lesson.TimeFinish = _dateRange.End + timeEnd;
     }
 
     async Task GetListLessonOfWeek()
