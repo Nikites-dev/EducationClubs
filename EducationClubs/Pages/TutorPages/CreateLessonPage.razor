@@ -5,7 +5,11 @@
 @using MongoDB.Driver.Linq
 @inject EducationClubContext EducationClubContext
 @inject BehaviourService BehaviourService
+@inject DateTimeService DateTimeService
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<div class="background">&nbsp;</div>
 
 @if (isInitHeademenu)
 {
@@ -23,7 +27,7 @@
                 <p>Кружок:<span class="required"> *</span></p>
             </div>
 
-            <MudSelect Dense="true" T="string" @bind-Value="crntAddClass" Label="Кружок" Variant="Variant.Outlined">
+            <MudSelect Dense="true" T="string" @bind-Value="crntAddClass" Label="Хоббихорсинг" Variant="Variant.Outlined">
                 @if (tutorAdditionalClasses.Count != 0)
                 {
                     foreach (var lesson in tutorAdditionalClasses)
@@ -39,7 +43,7 @@
                 <MudIcon Icon="@Icons.Material.Filled.MenuBook" Color="Color.Dark"/>
                 <p>Тема занятия:</p>
             </div>
-            <MudTextField @bind-Value="crntLessonTitle" HelperText="Тема" Variant="Variant.Outlined"/>
+            <MudTextField @bind-Value="crntLessonTitle" Label="Тема" HelperText="Тема" Variant="Variant.Outlined"/>
         </div>
 
         <div class="box-content-row">
@@ -48,13 +52,13 @@
                 <p>День недели:<span class="required"> *</span></p>
             </div>
 
-            <MudSelect Dense="true" @bind-Value="crntDayofWeek" T="string" Label="Coffee" Variant="Variant.Outlined">
-                <MudSelectItem Value="@(GetDayNameRss(1))"/>
-                <MudSelectItem Value="@(GetDayNameRss(2))"/>
-                <MudSelectItem Value="@(GetDayNameRss(3))"/>
-                <MudSelectItem Value="@(GetDayNameRss(4))"/>
-                <MudSelectItem Value="@(GetDayNameRss(5))"/>
-                <MudSelectItem Value="@(GetDayNameRss(6))"/>
+            <MudSelect Dense="true" @bind-Value="crntDayofWeek" T="string" Label="Понедельник" Variant="Variant.Outlined">
+                <MudSelectItem Value="@(DateTimeService.GetDayNameRss(1))"/>
+                <MudSelectItem Value="@(DateTimeService.GetDayNameRss(2))"/>
+                <MudSelectItem Value="@(DateTimeService.GetDayNameRss(3))"/>
+                <MudSelectItem Value="@(DateTimeService.GetDayNameRss(4))"/>
+                <MudSelectItem Value="@(DateTimeService.GetDayNameRss(5))"/>
+                <MudSelectItem Value="@(DateTimeService.GetDayNameRss(6))"/>
             </MudSelect>
         </div>
 
@@ -98,12 +102,20 @@
             </MudStack>
         </div>
     </div>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true" @onclick="@SaveLessons">Сохранить</MudButton>
+    <MudButton Style="background-color: #4318ff" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true" @onclick="@SaveLessons">Сохранить</MudButton>
 </div>
 
 @code {
     private MudDateRangePicker _picker;
-    private List<String> _listDaysWeek = new List<string>() {GetDayNameRss(1), GetDayNameRss(2), GetDayNameRss(3), GetDayNameRss(4), GetDayNameRss(5), GetDayNameRss(6)};
+    private List<String> _listDaysWeek = new List<string>()
+    {
+        DateTimeService.GetDayNameRss(1),
+        DateTimeService.GetDayNameRss(2),
+        DateTimeService.GetDayNameRss(3),
+        DateTimeService.GetDayNameRss(4),
+        DateTimeService.GetDayNameRss(5),
+        DateTimeService.GetDayNameRss(6)
+    };
     private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(6).Date);
     public List<Lesson> _listLesson = new List<Lesson>(); 
     TimeSpan? timeStart = new TimeSpan(8, 00, 00);
@@ -111,6 +123,7 @@
     String crntAddClass = "";
     String crntLessonTitle = "";
     String crntDayofWeek = "";
+    bool license_accepted = false;
 
     public List<AdditionalClass> tutorAdditionalClasses = new List<AdditionalClass>();
 
@@ -129,32 +142,14 @@
         tutorAdditionalClasses = await EducationClubContext.AdditionalClasses.Where(xo => xo.TutorId == BehaviourService.AuthTutor.Id).ToListAsync();
     }
 
-    String getDayOfWeekRu()
-    {
-    // dt = DateTime.W;
-
-    // return dt.ToString("dddd", new CultureInfo("ru-RU")).ToString();
-
-        return ((System.DayOfWeek) ((Convert.ToInt32("1")) % Enum.GetValues(typeof(System.DayOfWeek)).Length)).ToString();
-    }
-
-    public static string GetDayNameRss(int dayNumber)
-    {
-        var culture = CultureInfo.CreateSpecificCulture("ru-RU");
-        culture.DateTimeFormat.FirstDayOfWeek = System.DayOfWeek.Sunday;
-
-        var dayNames = culture.DateTimeFormat.DayNames;
-
-        return dayNames[dayNumber].Substring(0, 1).ToUpper() + dayNames[dayNumber].Substring(1);
-    }
-
-    void SaveLessons()
+    async Task SaveLessons()
     {
         if (!isLessonValidate())
         {
             return;
         }
-        CheckLessonsIntegrate();
+        await GetListLessonOfWeek();
+        await CheckLessonsIntegrate();
     }
 
     bool isLessonValidate()
@@ -187,16 +182,17 @@
     }
 
 
-    void CheckLessonsIntegrate()
+    async Task CheckLessonsIntegrate()
     {
-       //  int countDays = (_dateRange.End - _dateRange.Start).TotalDays;;
         var indxDayOfWeek = _listDaysWeek.FindIndex(x => x == crntDayofWeek) + 1;
-        
+
+        List<DateTime> listAccessDateTime = new List<DateTime>();
+
         for (DateTime date = _dateRange.Start.Value; date <= _dateRange.End; date = date.AddDays(1))
         {
             if ((int)date.DayOfWeek != indxDayOfWeek)
             {
-                return;
+                continue;
             }
 
             var isLessonExist = _listLesson.FirstOrDefault(x =>
@@ -205,13 +201,19 @@
             
             if (isLessonExist == false)
             {
-                Lesson lesson = new Lesson();
-                lesson.Title = crntLessonTitle;
-                lesson.TimeStart = date + timeStart;
-                lesson.TimeFinish = date + timeEnd;
-                lesson.AdditionalClassId = tutorAdditionalClasses.Where(x => x.Title == crntAddClass).FirstOrDefault().Id;
-                lesson.DayOfWeekId = indxDayOfWeek;
+                listAccessDateTime.Add(date);
             }
+            else
+            {
+                Snackbar.Add($"Дата зянята {date.ToShortDateString()} {(date + timeStart.Value).ToShortTimeString()}", Severity.Error, config => { config.ShowCloseIcon = false; });
+                return;
+            }
+        }
+        await OpenDialog();
+
+        if (license_accepted)
+        {
+            await AddLesson(listAccessDateTime, indxDayOfWeek);
         }
     }
 
@@ -220,17 +222,36 @@
         return firstTimeStart < secondTimeEnd && firstTimeEnd > secondTimeStart;
     }
     
-    void AddLesson()
+    async Task AddLesson(List<DateTime> listAccessDateTime, int indxDayOfWeek)
     {
-        Lesson lesson = new Lesson();
-        lesson.AdditionalClassId = tutorAdditionalClasses.Where(x => x.Title == crntAddClass).FirstOrDefault().Id;
-        lesson.DayOfWeekId = _listDaysWeek.FindIndex(x => x == crntDayofWeek) + 1;
-        lesson.TimeStart = _dateRange.Start + timeStart;
-        lesson.TimeFinish = _dateRange.End + timeEnd;
+        foreach (var date in listAccessDateTime)
+        {
+            Lesson lesson = new Lesson();
+            lesson.Title = crntLessonTitle;
+            lesson.TimeStart = date + timeStart;
+            lesson.TimeFinish = date + timeEnd;
+            lesson.AdditionalClassId = tutorAdditionalClasses.Where(x => x.Title == crntAddClass).FirstOrDefault().Id;
+            lesson.DayOfWeekId = indxDayOfWeek;
+
+            await EducationClubContext.Lessons.AddAsync(lesson);
+            await EducationClubContext.SaveChangesAsync();
+        }
+        Snackbar.Add("Занятия добавлены!", Severity.Success, config => { config.ShowCloseIcon = false; });
     }
 
     async Task GetListLessonOfWeek()
     {
         _listLesson = await EducationClubContext.Lessons.Where(x => x.AdditionalClass.Tutor.Id == BehaviourService.AuthTutor.Id).ToListAsync();
+    }
+
+    async Task OpenDialog()
+        {
+            var result = await DialogService.Show<ConfirmDialog>("Добавить занятия?").Result;
+
+            if (!result.Canceled)
+            {
+                license_accepted = (bool) (result.Data ?? false);
+            }
+        }
     }
 }

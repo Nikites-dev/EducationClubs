@@ -1,8 +1,6 @@
-﻿.menu-tool-lesson {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: end;
+﻿* {
+    margin: 0;
+    padding: 0;
 }
 
 #container-lesson {
@@ -24,12 +22,11 @@
 
 .menu-tool-lesson {
     display: flex;
-    justify-content: end;
-    padding-right: 30px;
+    justify-content: center;
+    
     align-items: center;
     margin: auto;
     height: 60px;
-    width: 50%;
     color: #4318FF;
     font-weight: bolder;
     font-size: 16px;
@@ -38,14 +35,15 @@
 hr.solid {
     border-left: 1px solid #000;
     height: 20px;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .btn-nav {
     background: #4318FF;
     padding: 10px;
-    margin: 3px;
+    margin-right: 10px;
+    margin-left: 10px;
     font-size: 14px;
     border-radius: 10px;
     color: white;

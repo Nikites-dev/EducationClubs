@@ -7,11 +7,11 @@
 <div class="menuHeader">
     <div class="box1">
         <div>
-            <p class="app">Educatucation Club</p>    
+            <p class="app" onclick="@OpenMainPage">Educatucation Club</p>    
         </div>
         
         <div class="nav-btns">
-            <MudButton Variant="Variant.Filled"  Color="Color.Transparent" StartIcon="@Icons.Material.Filled.Add" @onclick="@OpenNewLessonPage">Занятие</MudButton>
+            <MudButton Style="background-color: #f4f7fe; color: #4318ff" Variant="Variant.Filled"  StartIcon="@Icons.Material.Filled.Add" @onclick="@OpenNewLessonPage">Занятие</MudButton>
         </div>
     </div>
 
@@ -54,5 +54,10 @@
     void OpenNewLessonPage()
     {
         NavigationManager.NavigateTo("/tutor/lesson/new");
+    }
+    
+    void OpenMainPage()
+    {
+        NavigationManager.NavigateTo("/tutor/main");
     }
 }

@@ -6,11 +6,11 @@
 @inject EducationClubContext EducationClubContext
 
 <div class="menu-tool-lesson">
-    <button class="btn-nav" @onclick="() => MoveListLessonOfWeeks(false)">назад</button>
+    <MudIconButton Style="background-color: #4318ff; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" @onclick="() => MoveListLessonOfWeeks(false)"></MudIconButton>
     <button @onclick="@GetListLessonOfWeeks">@GetShortDate(firstDayOfWeek)</button>
     <hr class="solid">
     <button @onclick="@GetListLessonOfWeeks">@GetShortDate(lastDayOfWeek)</button>
-    <button class="btn-nav" @onclick="() => MoveListLessonOfWeeks(true)">вперед</button>
+    <MudIconButton Style="background-color: #4318ff; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" @onclick="() => MoveListLessonOfWeeks(true)"></MudIconButton>
 </div>
 
 @if (listLesson.Count != 0)
