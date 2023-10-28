@@ -83,7 +83,6 @@
             </div>
         </div>
 
-
         <div class="box-content-row">
 
             <div class="box-horizontal">
@@ -107,6 +106,7 @@
 
 @code {
     private MudDateRangePicker _picker;
+
     private List<String> _listDaysWeek = new List<string>()
     {
         DateTimeService.GetDayNameRss(1),
@@ -116,17 +116,16 @@
         DateTimeService.GetDayNameRss(5),
         DateTimeService.GetDayNameRss(6)
     };
+
     private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(6).Date);
-    public List<Lesson> _listLesson = new List<Lesson>(); 
+    public List<Lesson> _listLesson = new List<Lesson>();
     TimeSpan? timeStart = new TimeSpan(8, 00, 00);
     TimeSpan? timeEnd = new TimeSpan(9, 30, 00);
     String crntAddClass = "";
     String crntLessonTitle = "";
     String crntDayofWeek = "";
     bool license_accepted = false;
-
     public List<AdditionalClass> tutorAdditionalClasses = new List<AdditionalClass>();
-
     bool isInitHeademenu;
 
     protected override async Task OnInitializedAsync()
@@ -165,22 +164,20 @@
             Snackbar.Add("Кружок не выбран!", Severity.Error, config => { config.ShowCloseIcon = false; });
             return false;
         }
-        
+
         if (crntDayofWeek == "")
         {
             Snackbar.Add("Выберите день недели!", Severity.Error, config => { config.ShowCloseIcon = false; });
             return false;
         }
-        
         return true;
     }
-    
+
     void initSnakebarPosition(string position)
     {
         Snackbar.Clear();
         Snackbar.Configuration.PositionClass = position;
     }
-
 
     async Task CheckLessonsIntegrate()
     {
@@ -190,7 +187,7 @@
 
         for (DateTime date = _dateRange.Start.Value; date <= _dateRange.End; date = date.AddDays(1))
         {
-            if ((int)date.DayOfWeek != indxDayOfWeek)
+            if ((int) date.DayOfWeek != indxDayOfWeek)
             {
                 continue;
             }
@@ -198,7 +195,7 @@
             var isLessonExist = _listLesson.FirstOrDefault(x =>
                 IsTimeIntersects(x.TimeStart.Value, x.TimeFinish.Value,
                     date + timeStart.Value, date + timeEnd.Value)) != null;
-            
+
             if (isLessonExist == false)
             {
                 listAccessDateTime.Add(date);
@@ -221,7 +218,7 @@
     {
         return firstTimeStart < secondTimeEnd && firstTimeEnd > secondTimeStart;
     }
-    
+
     async Task AddLesson(List<DateTime> listAccessDateTime, int indxDayOfWeek)
     {
         foreach (var date in listAccessDateTime)
@@ -245,13 +242,13 @@
     }
 
     async Task OpenDialog()
-        {
-            var result = await DialogService.Show<ConfirmDialog>("Добавить занятия?").Result;
+    {
+        var result = await DialogService.Show<ConfirmDialog>("Добавить занятия?").Result;
 
-            if (!result.Canceled)
-            {
-                license_accepted = (bool) (result.Data ?? false);
-            }
+        if (!result.Canceled)
+        {
+            license_accepted = (bool) (result.Data ?? false);
         }
     }
+
 }

@@ -49,8 +49,7 @@
     {
         _tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(tutor => tutor.AccountId == BehaviourService.authAccount.Id);
     }
-    
-    
+
     void OpenNewLessonPage()
     {
         NavigationManager.NavigateTo("/tutor/lesson/new");
