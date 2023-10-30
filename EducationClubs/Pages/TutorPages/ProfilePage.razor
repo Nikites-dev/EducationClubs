@@ -1,0 +1,58 @@
+﻿@page "/profile"
+
+@using EducationClubs.ScaffoldedModels;
+@using System.Globalization;
+@inject EducationClubContext EducationClubContext
+
+<style type="text/css">
+    .mainblock {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+<HeaderMenu/>
+<MudPaper Style="position: absolute; left:15%; top: 20%; width: 70%; height: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; ">
+    <div class="mainblock"> 
+        <div style="flex: 50%; text-align: center;">
+            <MudAvatar Style="height:300px; width:300px; font-size:2rem;"></MudAvatar>
+        </div>
+        <div style="flex: 50%; margin: 10px">
+            <div style="display: inline-flex; ">
+                <MudText Style="font-size: 24px; margin: 10px;">Фамилия</MudText>
+                <MudTextField @bind-Value="CurrentTutor.Surname" Variant="Variant.Outlined" Style="border: solid 1px #869E9E; height:30px; margin: 10px 10px 10px 50px;" />
+            </div>
+            <div style="display: inline-flex;">
+                <MudText Style="font-size: 24px; margin: 10px;">Имя</MudText>
+                <MudTextField @bind-Value="CurrentTutor.Name" Variant="Variant.Outlined" Style="border: solid 1px #869E9E; height:30px; margin: 10px 10px 10px 107px;" />
+            </div>
+            <div style="display: inline-flex;">
+                <MudText Style="font-size: 24px; margin: 10px;">Отчество</MudText>
+                <MudTextField @bind-Value="CurrentTutor.Patronymic" Variant="Variant.Outlined" Style="border: solid 1px #869E9E; height:30px; margin: 10px 10px 10px 49px;" />
+            </div>
+            <div>
+                <MudText Style="font-size: 24px; margin: 30px 10px 10px 10px;">Список кружков</MudText>
+                <div style="overflow: scroll; height: 100px">
+                    <MudTable Items="@Elements" Hover="true">
+                        <RowTemplate>
+                            <MudTd DataLabel="Title">@context.Title</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </div>
+            </div>
+        </div>
+    </div>
+</MudPaper>
+
+@code {
+    private Tutor CurrentTutor { get; set; }
+    private IEnumerable<AdditionalClass> Elements = new List<AdditionalClass>();
+
+    protected override void OnInitialized()
+    {
+        CurrentTutor = EducationClubContext.Tutors.Where(x => x.Id == 1).FirstOrDefault();
+        Elements = EducationClubContext.AdditionalClasses.Where(x => x.TutorId == CurrentTutor.Id).ToList();
+    }
+}
