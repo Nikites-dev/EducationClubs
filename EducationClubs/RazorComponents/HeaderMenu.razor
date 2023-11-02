@@ -3,26 +3,35 @@
 @inject EducationClubContext EducationClubContext
 @inject NavigationManager NavigationManager
 @using EducationClubs.ScaffoldedModels;
+@using Microsoft.IdentityModel.Tokens
+@inject FileUploaderService FileUploaderService
 
 <div class="menuHeader">
     <div class="box1">
         <div>
-            <p class="app" onclick="@OpenMainPage">Educatucation Club</p>    
+            <p class="app" @onclick="(() => OpenPage(TUTOR_MAIN))">Educatucation Club</p>    
         </div>
         
         <div class="nav-btns">
-            <MudButton Style="background-color: #f4f7fe; color: #4318ff" Variant="Variant.Filled"  StartIcon="@Icons.Material.Filled.Add" @onclick="@OpenNewLessonPage">Занятие</MudButton>
+            <MudButton Style="background-color: #f4f7fe; color: #4318ff" Variant="Variant.Filled"  StartIcon="@Icons.Material.Filled.Add" @onclick="(() => OpenPage(TUTOR_LESSON_NEW))">Занятие</MudButton>
         </div>
     </div>
 
     @if (_tutor.AccountId != 0 || _tutor.AccountId != null)
     {
-        <div class="box-profile">
+        <div class="box-profile" @onclick="(() => OpenPage(TUTOR_PROFILE))">
             <p class="title-text">@_tutor.Name</p>
             <p class="title-text">@_tutor.Surname</p>
            
             <div class="img-circle">
-                <img alt="img" height="40" src="https://i5.imageban.ru/out/2023/03/07/1ef9c562b15e251bad06d9eb11cc1afe.jpg"/>    
+                @if (!imgUrl.IsNullOrEmpty())
+                {
+                    <img alt="img2" height="40" src="@imgUrl"/>
+                }
+                else
+                {
+                    <img alt="img2" height="40" src="https://users.cf.talkfusion.com/default-user-profile-image.png"/>
+                }
             </div>
         </div>
     }   
@@ -31,32 +40,35 @@
 @code {
     private Tutor _tutor = new Tutor();
     private bool isTutor = true;
+        
+    const String TUTOR_MAIN= "/tutor/main";
+    const String TUTOR_LESSON_NEW= "/tutor/lesson/new";
+    const String TUTOR_PROFILE= "/tutor/profile";
+    
+    String imgAuthTutor = "";
 
+    [Parameter]
+    public String imgUrl { get; set; }
+
+    private string ValueChange { get; set; }
+    
     protected override async Task OnInitializedAsync()
     {
         if (BehaviourService.authAccount != null)
         {
-            await GetTutor();
+            _tutor = BehaviourService.AuthTutor;
         }
         else
         {
             _tutor.Name = "First Name";
             _tutor.Surname = "Last Name";
         }
+
+        imgUrl = await FileUploaderService.GetImage(Folder.TUTOR, BehaviourService.AuthTutor.Id.ToString());
     }
 
-    async Task GetTutor()
+    void OpenPage(String deeplink)
     {
-        _tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(tutor => tutor.AccountId == BehaviourService.authAccount.Id);
-    }
-
-    void OpenNewLessonPage()
-    {
-        NavigationManager.NavigateTo("/tutor/lesson/new");
-    }
-    
-    void OpenMainPage()
-    {
-        NavigationManager.NavigateTo("/tutor/main");
+        NavigationManager.NavigateTo(deeplink);
     }
 }

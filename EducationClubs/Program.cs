@@ -21,6 +21,7 @@ builder.Services.AddSingleton<LessonCard>();
 builder.Services.AddSingleton<LessonBoard>();
 builder.Services.AddSingleton<DateTimeService>();
 builder.Services.AddSingleton<CreateLessonPage>();
+builder.Services.AddSingleton<FileUploaderService>();
 
 builder.Services.AddMudServices();
 builder.Services.AddMudServices(config =>
