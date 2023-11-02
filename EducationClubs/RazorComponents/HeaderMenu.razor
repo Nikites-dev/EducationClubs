@@ -3,6 +3,8 @@
 @inject EducationClubContext EducationClubContext
 @inject NavigationManager NavigationManager
 @using EducationClubs.ScaffoldedModels;
+@using Microsoft.IdentityModel.Tokens
+@inject FileUploaderService FileUploaderService
 
 <div class="menuHeader">
     <div class="box1">
@@ -22,7 +24,14 @@
             <p class="title-text">@_tutor.Surname</p>
            
             <div class="img-circle">
-                <img alt="img" height="40" src="https://i5.imageban.ru/out/2023/03/07/1ef9c562b15e251bad06d9eb11cc1afe.jpg"/>    
+                @if (!imgUrl.IsNullOrEmpty())
+                {
+                    <img alt="img2" height="40" src="@imgUrl"/>
+                }
+                else
+                {
+                    <img alt="img2" height="40" src="https://users.cf.talkfusion.com/default-user-profile-image.png"/>
+                }
             </div>
         </div>
     }   
@@ -35,23 +44,27 @@
     const String TUTOR_MAIN= "/tutor/main";
     const String TUTOR_LESSON_NEW= "/tutor/lesson/new";
     const String TUTOR_PROFILE= "/tutor/profile";
+    
+    String imgAuthTutor = "";
 
+    [Parameter]
+    public String imgUrl { get; set; }
+
+    private string ValueChange { get; set; }
+    
     protected override async Task OnInitializedAsync()
     {
         if (BehaviourService.authAccount != null)
         {
-            await GetTutor();
+            _tutor = BehaviourService.AuthTutor;
         }
         else
         {
             _tutor.Name = "First Name";
             _tutor.Surname = "Last Name";
         }
-    }
 
-    async Task GetTutor()
-    {
-        _tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(tutor => tutor.AccountId == BehaviourService.authAccount.Id);
+        imgUrl = await FileUploaderService.GetImage(Folder.TUTOR, BehaviourService.AuthTutor.Id.ToString());
     }
 
     void OpenPage(String deeplink)

@@ -7,6 +7,7 @@
 @using Microsoft.EntityFrameworkCore
 @inject EducationClubContext EducationClubContext
 @inject BehaviourService BehaviourService
+@inject FileUploaderService FileUploaderService
 
 <style type="text/css">
     .mainblock {
@@ -19,7 +20,7 @@
 </style>
 @if (isHeadermenuInit)
 {
-    <HeaderMenu/>    
+    <HeaderMenu imgUrl="@imgUrl"/>
 }
 
 @if (_additionalClasses.Count() != 0 && CurrentTutor.Id != 0)
@@ -27,15 +28,26 @@
     <MudPaper Style="position: absolute; left:15%; top: 20%; width: 70%; height: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; ">
     <div class="mainblock"> 
         <div style="flex: 50%; text-align: center;">
-            @if (imgUrl != null || imgUrl != "")
+            @if (!string.IsNullOrEmpty(imgUrl))
             {
                 <MudAvatar Style="height:300px; width:300px; font-size:2rem; background-color: white" Image="@imgUrl"></MudAvatar>   
             }
             else
             {
-                <MudAvatar Style="height:300px; width:300px; font-size:2rem;" Color="Color.Dark"></MudAvatar>   
+                <MudAvatar Style="height:300px; width:300px; font-size:2rem;" Color="Color.Dark" Image="https://users.cf.talkfusion.com/default-user-profile-image.png"></MudAvatar>   
             }
         </div>
+        
+        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+            <ButtonTemplate>
+                <MudIconButton HtmlTag="label"
+                               Color="Color.Info"
+                               Icon="@Icons.Material.Filled.PhotoCamera"
+                               for="@context">
+                </MudIconButton>
+            </ButtonTemplate>
+        </MudFileUpload>
+
         <div style="flex: 50%; margin: 10px">
             <div style="display: inline-flex; ">
                 <MudText Style="font-size: 24px; margin: 10px;">Фамилия</MudText>
@@ -60,16 +72,6 @@
                 </div>
             </div>
         </div>
-        
-        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
-            <ButtonTemplate>
-                <MudIconButton HtmlTag="label"
-                               Color="Color.Info"
-                               Icon="@Icons.Material.Filled.PhotoCamera"
-                               for="@context">
-                </MudIconButton>
-            </ButtonTemplate>
-        </MudFileUpload>
     </div>
 </MudPaper>
 }
@@ -81,69 +83,24 @@
     private bool isHeadermenuInit = false;
     private bool isContentInit = false;
     private String? imgUrl = "";
-    
-    IList<IBrowserFile> files = new List<IBrowserFile>();
-    private async Task UploadFiles(IBrowserFile file)
-    {
-        // files.Add(file);
 
-        await Upload(file);
-        imgUrl =  await GetImage(CurrentTutor.Id.ToString());
-    }
-    
     protected override async Task OnInitializedAsync()
     {
         CurrentTutor = BehaviourService.AuthTutor;
         await GetAdditionalClass();
+        imgUrl =  await FileUploaderService.GetImage(Folder.TUTOR, CurrentTutor.Id.ToString());
         isHeadermenuInit = true;
-
-        imgUrl =  await GetImage(CurrentTutor.Id.ToString());
+    }
+    
+    private async Task UploadFiles(IBrowserFile file)
+    {
+        await FileUploaderService.Upload(Folder.TUTOR, CurrentTutor.Id.ToString(), file);
+        imgUrl =  await FileUploaderService.GetImage(Folder.TUTOR, CurrentTutor.Id.ToString());
+        StateHasChanged();
     }
 
     async Task GetAdditionalClass()
     {
         _additionalClasses = await EducationClubContext.AdditionalClasses.Where(xo => xo.TutorId == CurrentTutor.Id).ToListAsync();
-    }
-    
-    async Task Upload(IBrowserFile file)
-    {
-        try
-        {
-            var task = new FirebaseStorage("flutterapp-63c02.appspot.com")
-                .Child("data")
-                .Child("random")
-                .Child(CurrentTutor.Id.ToString() + ".png")
-                .PutAsync(file.OpenReadStream());
-        
-            task.Progress.ProgressChanged += (s, e) => Console.WriteLine($"Progress: {e.Percentage} %");
-            
-            var downloadUrl = await task;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-    }
-
-    
-    async Task<string> GetImage(String fileName)
-    {
-        Task<string> task;
-        
-        try
-        {
-            task = new FirebaseStorage("flutterapp-63c02.appspot.com")
-                .Child("data")
-                .Child("random")
-                .Child(fileName + ".png") // 
-                .GetDownloadUrlAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return null;  
-        }
-
-        return await task;
     }
 }
