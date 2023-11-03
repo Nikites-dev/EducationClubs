@@ -1,7 +1,9 @@
 ﻿@page "/director/tutors"
 
-@using EducationClubs.ScaffoldedModels;
-@using System.Globalization;
+@using EducationClubs.RazorComponents.Dialogues;
+@using EducationClubs.ScaffoldedModels
+@using System.Globalization
+@inject IDialogService DialogService
 @inject EducationClubContext EducationClubContext
 
 <MudPaper>
@@ -24,7 +26,7 @@
             <ToolBarContent>
                 <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 <MudSpacer />
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px">Добавить учителя</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="@OpenDialog">Добавить учителя</MudButton>
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>Фамилия</MudTh>
@@ -70,5 +72,11 @@
         if (element.Patronymic.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
+    }
+
+    private void OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        DialogService.Show<TutorAddingDialog>("", options);
     }
 }
