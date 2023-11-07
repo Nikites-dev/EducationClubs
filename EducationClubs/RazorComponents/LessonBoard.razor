@@ -71,12 +71,13 @@
             x.TimeStart > firstDayOfWeek &&
             x.TimeFinish < lastDayOfWeek &&
             x.AdditionalClass.Tutor.Id == authTutor.Id
-            ).ToListAsync();
+            ).ToListAsync<Lesson>();
     }
 
     List<Lesson> GetLessonsOfWeek(int weekId)
     {
-        return listLesson.Where(x => x.DayOfWeekId == weekId).ToList();
+        listLesson = listLesson.Where(x => x.DayOfWeekId == weekId).OrderBy(x => x.TimeStart).ToList();
+        return listLesson;
     }
     
     String GetShortTime(DateTime? dateTime)
