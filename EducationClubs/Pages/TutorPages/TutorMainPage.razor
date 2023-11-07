@@ -9,7 +9,18 @@
 @inject EducationClubContext EducationClubContext
 @inject BehaviourService BehaviourService
 
-<div class="background">&nbsp;</div>
+<div class="background">
+
+@if (BehaviourService.authAccount == null)
+{
+    <p>403</p><div>&nbsp;</div>
+    <p>Forbidden</p>
+}
+else
+{
+    <div>&nbsp;</div>
+}
+</div>
 
 @if (isHeadermenuInit)
 {
@@ -35,6 +46,11 @@
     
     protected override async Task OnInitializedAsync()
     {
+        if (BehaviourService.authAccount == null)
+        {
+            return;
+        }
+
         firstDayOfWeek = System.DateTime.Now.StartOfWeek(System.DayOfWeek.Monday);
         lastDayOfWeek = firstDayOfWeek.AddDays(6);
         
