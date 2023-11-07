@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using System.Reactive.Linq
 @using System.Threading
 @using EducationClubs.ScaffoldedModels;
 @using Microsoft.EntityFrameworkCore
@@ -15,7 +16,7 @@
 
 @if (listLesson.Count != 0)
 {
-    <div id="container-lesson">
+    <div class="container-lesson">
         <div class="row-v">
             <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(1)"/></div>
             <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(2)"/></div>
@@ -31,8 +32,49 @@
 } else
 {
     <div class="content-empty">
-        <p>Расписания на эту дату нет :(</p>
+        <div class="content-empty">
+            <p>Расписания на эту дату нет :(</p>
+        </div>
     </div>
+    @* *@
+    @* <div class="container-lesson"> *@
+        
+        @* @{ *@
+        @*     Task.Run(async () =>await ShowSkeletonBoard()); *@
+        @* } *@
+        
+        
+        @* @if (shortSkeleton) *@
+        @* { *@
+        @*     <div class="row-v"> *@
+        @*         <div class="item"><div Style="border-radius: 20px; background-color: white; margin: 10px; width: 400px; height: 180px;"/></div> *@
+        @*         <div class="item"><div Style="border-radius: 20px; background-color: white; margin: 10px; width: 400px; height: 180px;"/></div> *@
+        @*         <div class="item"><div Style="border-radius: 20px; background-color: white; margin: 10px; width: 400px; height: 180px;"/></div> *@
+        @*     </div> *@
+        @* *@
+        @* *@
+        @*     <div class="row-v"> *@
+        @*         <div class="item"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="400px" Height="180px" Style="border-radius: 20px; background-color: white; margin: 10px;" Animation="Animation.False"/></div> *@
+        @*         <div class="item"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="400px" Height="180px" Style="border-radius: 20px; background-color: white; margin: 10px;" Animation="Animation.False"/></div> *@
+        @*         <div class="item"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="400px" Height="180px" Style="border-radius: 20px; background-color: white; margin: 10px;" Animation="Animation.False"/></div> *@
+        @*     </div> *@
+        @* } *@
+        @* else *@
+        @* { *@
+        @*     <div class="row-v"> *@
+        @*         <div class="item"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="400px" Height="180px" Style="border-radius: 20px; background-color: rgba(7,15,38,0.07); margin: 10px;"/></div> *@
+        @*         <div class="item"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="400px" Height="180px" Style="border-radius: 20px; background-color: rgba(7,15,38,0.07); margin: 10px;"/></div> *@
+        @*         <div class="item"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="400px" Height="180px" Style="border-radius: 20px; background-color: rgba(7,15,38,0.07); margin: 10px;"/></div> *@
+        @*     </div> *@
+        @* *@
+        @* *@
+        @*     <div class="row-v"> *@
+        @*         <div class="item"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="400px" Height="180px" Style="border-radius: 20px; background-color: rgba(7,15,38,0.07); margin: 10px;"/></div> *@
+        @*         <div class="item"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="400px" Height="180px" Style="border-radius: 20px; background-color: rgba(7,15,38,0.07); margin: 10px;"/></div> *@
+        @*         <div class="item"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="400px" Height="180px" Style="border-radius: 20px; background-color: rgba(7,15,38,0.07); margin: 10px;"/></div> *@
+        @*     </div> *@
+        @* } *@
+    // </div>
 }
 
 @code {
@@ -49,6 +91,7 @@
     private DateTime crntTime = DateTime.Now;
     private DateTime firstDayOfWeek = DateTime.Now;
     private DateTime lastDayOfWeek = DateTime.Now;
+    private bool shortSkeleton = true; 
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,5 +133,22 @@
     {
         DateTime convertDate = (DateTime) dateTime;
         return convertDate.ToString("dd.MM");
+    }
+    
+    
+    async Task ShowSkeletonBoard()
+    {
+        long x = 0L;
+        Observable
+            .Interval(TimeSpan.FromSeconds(1.5))
+            .Take(3)
+            .Subscribe(n =>
+            {
+                shortSkeleton = true;
+                x = n;
+            }, () =>
+            {
+                shortSkeleton = false;
+            });
     }
 }
