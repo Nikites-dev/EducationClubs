@@ -1,6 +1,8 @@
-﻿@using EducationClubs.ScaffoldedModels;
+﻿@using EducationClubs.RazorComponents.Dialogues;
+@using EducationClubs.ScaffoldedModels;
+@inject IDialogService DialogService
 @inject EducationClubContext EducationClubContext
-@page "/tutor/lesson"
+@page "/tutor/lesson/{lessonId}"
 
 <MudPaper>
     <MudAppBar Style="margin-top: 2%; background-color: white; display: block; width: 90%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
@@ -15,7 +17,7 @@
         <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 15%; height: 60%; text-align:center;">
             Конец
         </MudContainer>
-        <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px">Добавить ученика</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="@OpenDialog">Добавить ученика</MudButton>
     </MudPaper>
     <MudPaper Style="position: absolute; left:15%; top: 28%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
         <MudTable Items="@Elements" Hover="@hover" Filter="new Func<Student,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" >
@@ -47,13 +49,23 @@
     private bool hover = true;
     private string searchString = "";
     private Student selectedItem = new Student();
+    private Student student = new Student();
     private HashSet<Student> selectedItems = new HashSet<Student>();
+    private List<Student> Elements = new List<Student>();
+    private List<Attendence> AttendenceList = new List<Attendence>();
 
-    private IEnumerable<Student> Elements = new List<Student>();
+    [Parameter]
+    public string? lessonId { get; set; }
 
     protected override void OnInitialized()
     {
-        Elements = EducationClubContext.Students.ToList();
+        AttendenceList = EducationClubContext.Attendences.Where(x => x.LessonId == int.Parse(lessonId)).ToList();
+
+        foreach (var attendence in AttendenceList)
+        {
+            student = EducationClubContext.Students.Where(x => x.Id == attendence.StudentId).FirstOrDefault();
+            Elements.Add(student);
+        }
     }
 
     private bool FilterFuncOne(Student element) => FilterFunc(element, searchString);
@@ -67,5 +79,12 @@
         if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
+    }
+
+    private void OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["lessonId"] = lessonId };
+        DialogService.Show<StudentAddingDialog>("", parameters, options);
     }
 }

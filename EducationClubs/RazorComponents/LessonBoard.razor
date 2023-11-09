@@ -6,11 +6,11 @@
 @inject EducationClubContext EducationClubContext
 
 <div class="menu-tool-lesson">
-    <MudIconButton Style="background-color: #4318ff; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" @onclick="() => MoveListLessonOfWeeks(false)"></MudIconButton>
+    <MudIconButton Style="background-image: linear-gradient(180deg, #82edff 0%, #0B5BF0 80%); box-shadow: rgb(38, 57, 77) 0px 3px 10px -0px; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" @onclick="() => MoveListLessonOfWeeks(false)"></MudIconButton>
     <button @onclick="@GetListLessonOfWeeks">@GetShortDate(firstDayOfWeek)</button>
     <hr class="solid">
     <button @onclick="@GetListLessonOfWeeks">@GetShortDate(lastDayOfWeek)</button>
-    <MudIconButton Style="background-color: #4318ff; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" @onclick="() => MoveListLessonOfWeeks(true)"></MudIconButton>
+    <MudIconButton Style="background-image: linear-gradient(180deg, #82edff 0%, #0B5BF0 80%); box-shadow: rgb(38, 57, 77) 0px 3px 10px -0px; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" @onclick="() => MoveListLessonOfWeeks(true)"></MudIconButton>
 </div>
 
 @if (listLesson.Count != 0)

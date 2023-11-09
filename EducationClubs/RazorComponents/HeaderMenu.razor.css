@@ -13,7 +13,7 @@
 .menuHeader {
     display: flex;
     height: 60px;
-    background: #4318ff;
+    background-image: linear-gradient(180deg, #82edff 0%, #0B5BF0 80%);
     flex-direction: row;
     align-items: center;
     padding-left: 10px;

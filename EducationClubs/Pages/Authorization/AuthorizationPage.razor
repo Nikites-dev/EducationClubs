@@ -7,44 +7,91 @@
 @inject ISnackbar Snackbar
 @inject BehaviourService BehaviourService
 
-<div class="Content">
-    <div class="CardAuth">
-        <div class="cardRow">
-            <p id="title">Sign in</p>
+<style>
+    .labelStyle {
+        letter-spacing: 0;
+        text-transform: none;
+        text-align: left;
+        vertical-align: middle;
+        /*
+                font-size: 28px;*/
+        color: black;
+        font-weight: 400;
+        width: 100%
+    }
+
+    .inputStyle {
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+        /*font-size: 22px;*/
+        width: 80%;
+        font-family: Playfair Display;
+        mix-blend-mode: normal;
+        align-items: inherit;
+    }
+
+    .mainBlock {
+        display: flex;
+        box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px; 
+        position: absolute;
+        left: 20%;
+        align-self: center;
+        width: 60%;
+        opacity: 1;
+        mix-blend-mode: normal;
+        background-color: rgba(255, 255, 255, 1);
+        align-items: center;
+        justify-content: center;
+        border-radius: 30px;    
+        height: 70%;
+    }
+</style>
+
+<div class="content">
+    <MudPaper class="mainBlock">
+        <div style="flex: 50%; padding: 3%; align-self: center">
+            <div style="text-align: center">
+                <MudText Style=" font-family: 'Mongolian Baiti'; font-size: 24px;">
+                    АВТОРИЗАЦИЯ
+                </MudText>
+            </div>
+            <br />
+            <br />
+            <MudText Style=" font-family: 'Mongolian Baiti'; margin: 0">
+                Логин
+            </MudText>
+            <MudTextField T="String" Variant="Variant.Text" Style="font-size: 16px; margin: 0" @bind-Value="email" />
+            <br />
+            <MudText Style=" font-family: 'Mongolian Baiti'; margin: 0">
+                Пароль
+            </MudText>
+            <MudTextField T="String" InputType="InputType.Password" Variant="Variant.Text" Style="font-size: 16px; margin: 0" @bind-Value="@password" />
+            <br />
+            <br />
+            <br />
+            <MudButton Variant="Variant.Outlined" Style="width: 40%; font-size: 16px; border: 3px solid #658dc3; color: #658dc3" Class="d-flex mx-auto" OnClick="Auth">Войти</MudButton>
         </div>
-        
-        <div class="cardRow">
-            <p>Email</p>
-            <input class="inputCard" @bind-value="@email"/>
+        <div style="flex: 50%; text-align: center;">
+            <MudImage src='/images/Image4.png' style="width:90%; object-fit: fill; overflow:hidden; flex: 50%; border-radius: 30px;"></MudImage>
         </div>
-        
-        <div class="cardRow">
-            <p>Password</p>
-            <input class="password" type="password" @bind-value="@password"/>
-        </div>
-        
-        <div class="cardRow">
-            <button class="btnSign" @onclick="@isValidate">Войти</button>
-        </div>
-    </div>
+    </MudPaper>
 </div>
 
 @code {
-    private String email = "plaksin@tutor.ru";
-    private String password = "123";
+    private String email = "";
+    private String password = "";
 
     protected override void OnInitialized()
     {
         initSnakebarPosition(Defaults.Classes.Position.BottomCenter);
     }
-    
+
     void initSnakebarPosition(string position)
     {
         Snackbar.Clear();
         Snackbar.Configuration.PositionClass = position;
     }
 
-    public async void isValidate()
+    public async void Auth()
     {
         var accountDb = await educationClubContext.Accounts.FirstOrDefaultAsync(x => x.Login == email && x.Password == password);
 
@@ -53,8 +100,16 @@
             Snackbar.Add("Пользователь не существует", Severity.Error, config => { config.ShowCloseIcon = false; });
             return;
         }
+
         BehaviourService.authAccount = accountDb;
-        NavigationManager.NavigateTo("/tutor/main");
+        if (accountDb.RoleId == 1)
+        {
+            NavigationManager.NavigateTo("/director/main");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/tutor/main");
+        }
     }
 
 }
