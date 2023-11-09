@@ -3,6 +3,7 @@
 @using System.Threading
 @inject EducationClubContext EducationClubContext
 @inject DateTimeService DateTimeService
+@inject NavigationManager NavigationManager
 
 <div class="cardLesson">
     @if (ItemLesson.Count != 0)
@@ -21,7 +22,7 @@
                     <div style="width: 90px" class="lesson-name">@GetShortTime(lesson.TimeStart)</div>
                     <div class="lesson-name">@GetLessonTitle(lesson.AdditionalClassId ?? default(int)).ToString()</div>
                     <div class="lesson-name3">
-                        <MudIconButton class="lesson-name3" Style="color: rgba(43,54,116,0.39);  margin: 0; padding: 0" Icon="@Icons.Material.Filled.Help" Size="Size.Small"></MudIconButton>
+                        <MudIconButton class="lesson-name3" Style="color: rgba(43,54,116,0.39);  margin: 0; padding: 0" Icon="@Icons.Material.Filled.Help" Size="Size.Small" @onclick="() => OpenLesson(lesson)"></MudIconButton>
                     </div>
                 </div>
                 <hr class="solid2">
@@ -61,4 +62,8 @@
         return AddClassList.Where(x => x.Id == addClassid).FirstOrDefault().Title.ToString();
     }
 
+    void OpenLesson(Lesson currentLesson)
+    {
+        NavigationManager.NavigateTo($"/tutor/lesson/{currentLesson.Id}");
+    }
 }
