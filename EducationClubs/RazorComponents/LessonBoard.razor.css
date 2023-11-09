@@ -3,7 +3,7 @@
     padding: 0;
 }
 
-#container-lesson {
+.container-lesson {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
