@@ -126,7 +126,7 @@
                     {
                         int attend = EducationClubContext.Attendences.Where(x => x.LessonId == todayLesson.Id).Count();
 
-                        labelsList.Add(todayLesson.Title);
+                        labelsList.Add(EducationClubContext.AdditionalClasses.Where(x => x.Id == todayLesson.AdditionalClassId).FirstOrDefault().Title);
                         dataList.Add(attend);
                     }
                 }
