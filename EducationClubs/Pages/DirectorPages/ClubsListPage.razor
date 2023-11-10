@@ -1,8 +1,12 @@
 ﻿@page "/director/clubs"
 
+@using EducationClubs.RazorComponents.Dialogues;
 @using EducationClubs.ScaffoldedModels;
 @using System.Globalization;
+@inject IDialogService DialogService
 @inject EducationClubContext EducationClubContext
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 
 <MudPaper>
     <MudAppBar Style="margin-top: 2%; background-color: white; display: block; width: 90%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
@@ -24,7 +28,7 @@
             <ToolBarContent>
                 <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 <MudSpacer />
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px">Добавить кружок</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="OpenDialog">Добавить кружок</MudButton>
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>Название</MudTh>
@@ -33,7 +37,7 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Название">@context.Title</MudTd>
-                <MudTd DataLabel="Руководитель">@EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Surname</MudTd>
+                <MudTd DataLabel="Руководитель">@EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Surname @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Name</MudTd>
                 <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Color="Color.Info">Просмотр</MudButton></MudTd>
             </RowTemplate>
             <PagerContent>
@@ -43,7 +47,43 @@
     </MudPaper>
 </MudPaper>
 
+<MudDialog Class="content" @bind-IsVisible="visible">
+    <TitleContent>
+        <MudText Style="font-size: 18px">
+            Добавление кружка:
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Style="font-size: 16px">
+            Наименование:
+        </MudText>
+        <MudTextField T="String" Variant="Variant.Text" Style="font-size: 16px; margin: 0; margin-bottom: 10px" @bind-Value="@title" />
+        <MudText Style="font-size: 16px">
+            Учитель:
+        </MudText>
+        <MudSelect T="Tutor" @bind-Value="@tutor" Style="font-size: 16px; margin: 0; margin-bottom: 10px">
+            @foreach (var tutor in Tutors)
+            {
+                <MudSelectItem Value="@tutor">
+                    @tutor.Surname @tutor.Name @tutor.Patronymic
+                </MudSelectItem>
+            }
+        </MudSelect>
+        <MudButton Variant="Variant.Outlined" Color="Color.Info" Class="d-flex mx-auto" Style="margin: 15px" @onclick="AddingNewClub">
+            Сохранить
+        </MudButton>
+    </DialogContent>
+</MudDialog>
+
+
+
 @code {
+    private IEnumerable<Tutor> Tutors = new List<Tutor>();
+    string tutorId;
+    string title;
+    Tutor tutor;
+    private bool visible;
+    private void OpenDialog() => visible = true;
     private string searchString = "";
     private AdditionalClass selectedItem = new AdditionalClass();
     private HashSet<AdditionalClass> selectedItems = new HashSet<AdditionalClass>();
@@ -53,6 +93,8 @@
     protected override void OnInitialized()
     {
         Elements = EducationClubContext.AdditionalClasses.ToList();
+
+        Tutors = EducationClubContext.Tutors.ToList();
     }
 
     private bool FilterFuncOne(AdditionalClass element) => FilterFunc(element, searchString);
@@ -66,5 +108,31 @@
         if (EducationClubContext.Tutors.Where(x => x.Id == element.TutorId).FirstOrDefault().Surname.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
+    }
+
+    void AddingNewClub()
+    {
+        if (title != null && tutor != null)
+        {
+            if (EducationClubContext.AdditionalClasses.Where(x => x.Title == title).FirstOrDefault() == null)
+            { 
+                AdditionalClass newClub = new AdditionalClass()
+                {
+                    Title = title,
+                    IsActive = true,
+                    TutorId = tutor.Id
+                };
+
+                EducationClubContext.AdditionalClasses.Add(newClub);
+                EducationClubContext.SaveChanges();
+                Snackbar.Add("Кружок успешно добавлен!", Severity.Success);
+                visible = false;
+                Elements = EducationClubContext.AdditionalClasses.ToList();
+            }
+            else
+            {
+                Snackbar.Add("Такой кружок уже существует", Severity.Warning);
+            }
+        }
     }
 }

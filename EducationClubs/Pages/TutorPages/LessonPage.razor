@@ -2,6 +2,7 @@
 @using EducationClubs.ScaffoldedModels;
 @inject IDialogService DialogService
 @inject EducationClubContext EducationClubContext
+@inject ISnackbar Snackbar
 @page "/tutor/lesson/{lessonId}"
 
 <MudPaper>
@@ -12,17 +13,17 @@
     </MudAppBar>
     <MudPaper Style="display: flex; position: absolute; left:15%; top: 15%; align-self: center; width: 70%; height: 10%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right">
         <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 15%; height: 60%; text-align:center;">
-            Начало
+            Начало @lesson.TimeStart
         </MudContainer>
         <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 15%; height: 60%; text-align:center;">
-            Конец
+            Конец @lesson.TimeFinish
         </MudContainer>
         <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="@OpenDialog">Добавить ученика</MudButton>
     </MudPaper>
     <MudPaper Style="position: absolute; left:15%; top: 28%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
-        <MudTable Items="@Elements" Hover="@hover" Filter="new Func<Student,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" >
+        <MudTable Items="@Elements" Filter="new Func<Student,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" >
             <ToolBarContent>
-                <MudText Typo="Typo.h6">Тут типо название занятия</MudText>
+                <MudText Typo="Typo.h6">@lesson.Title</MudText>
                 <MudSpacer />
                 <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
@@ -45,8 +46,36 @@
     </MudPaper>
 </MudPaper>
 
+<MudDialog Class="content" @bind-IsVisible="visible" Options="options">
+    <TitleContent>
+        <MudText Style="font-size: 18px">
+            Добавление ученика на занятие:
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTable @ref="_table" T="Student" Items="@Students" Filter="new Func<Student,bool>(FilterFuncThree)" @bind-SelectedItem="selectedItemOne" @bind-SelectOnRowClick="@_selectOnRowClick" Hover="true" OnRowClick="@OnRowClick">
+            <ToolBarContent>
+                <MudSpacer />
+                <MudTextField @bind-Value="searchStringOne" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Фамилия</MudTh>
+                <MudTh>Имя</MudTh>
+                <MudTh>Отчество</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Surname">@context.Surname</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Patronymic">@context.Patronymic</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 5 }" />
+            </PagerContent>
+        </MudTable>
+    </DialogContent>
+</MudDialog>
+
 @code {
-    private bool hover = true;
     private string searchString = "";
     private Student selectedItem = new Student();
     private Student student = new Student();
@@ -54,11 +83,34 @@
     private List<Student> Elements = new List<Student>();
     private List<Attendence> AttendenceList = new List<Attendence>();
 
+    private string searchStringOne = "";
+    private Student selectedItemOne = new Student();
+    private List<Student> Students = new List<Student>();
+    private bool IsAdded = false;
+    private bool _selectOnRowClick = true;
+    private MudTable<Student> _table;
+
+    private bool visible;
+    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+    AdditionalClass additionalClass;
+    Lesson lesson;
+
     [Parameter]
     public string? lessonId { get; set; }
 
     protected override void OnInitialized()
     {
+        lesson = EducationClubContext.Lessons.Where(x => x.Id == int.Parse(lessonId)).FirstOrDefault();
+        additionalClass = EducationClubContext.AdditionalClasses.Where(x => x.Id == lesson.AdditionalClassId).FirstOrDefault();
+        Students = EducationClubContext.Students.ToList();
+        initSnakebarPosition(Defaults.Classes.Position.BottomCenter);
+
+        Update();
+    }
+
+    public void Update()
+    {
+        Elements.Clear();
         AttendenceList = EducationClubContext.Attendences.Where(x => x.LessonId == int.Parse(lessonId)).ToList();
 
         foreach (var attendence in AttendenceList)
@@ -83,8 +135,47 @@
 
     private void OpenDialog()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters { ["lessonId"] = lessonId };
-        DialogService.Show<StudentAddingDialog>("", parameters, options);
+        visible = true;
+    }
+
+    private bool FilterFuncThree(Student element) => FilterFuncFour(element, searchString);
+
+    private bool FilterFuncFour(Student element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchStringOne))
+            return true;
+        if (element.Surname.Contains(searchStringOne, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Name.Contains(searchStringOne, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    void initSnakebarPosition(string position)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = position;
+    }
+
+    async Task OnRowClick(TableRowClickEventArgs<Student> args)
+    {
+        var result = await DialogService.Show<ConfirmDialog>($"Добавить этого ученика? {selectedItemOne.Surname} {selectedItemOne.Name} {selectedItemOne.Patronymic}").Result;
+
+        if (!result.Canceled)
+        {
+            var newAttendence = new Attendence()
+                {
+                    StudentId = selectedItemOne.Id,
+                    LessonId = int.Parse(lessonId),
+                    IsAttend = false
+                };
+
+            await EducationClubContext.Attendences.AddAsync(newAttendence);
+            await EducationClubContext.SaveChangesAsync();
+
+            Snackbar.Add("Ученик успешно добавлен!", Severity.Success, config => { config.ShowCloseIcon = false; });
+            visible = false;
+            Update();
+        }
     }
 }
