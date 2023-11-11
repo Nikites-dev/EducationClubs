@@ -1,4 +1,7 @@
-﻿namespace EducationClubs.ScaffoldedModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace EducationClubs.ScaffoldedModels;
 
 public partial class Tutor
 {

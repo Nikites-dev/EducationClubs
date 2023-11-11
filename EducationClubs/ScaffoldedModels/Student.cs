@@ -1,4 +1,7 @@
-﻿namespace EducationClubs.ScaffoldedModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace EducationClubs.ScaffoldedModels;
 
 public partial class Student
 {
@@ -11,4 +14,6 @@ public partial class Student
     public string? Patronymic { get; set; }
 
     public virtual ICollection<Attendence> Attendences { get; set; } = new List<Attendence>();
+
+    public virtual ICollection<Record> Records { get; set; } = new List<Record>();
 }
