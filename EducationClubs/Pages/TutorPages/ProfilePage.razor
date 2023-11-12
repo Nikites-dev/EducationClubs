@@ -6,7 +6,7 @@
 @using Firebase.Storage
 @using Microsoft.EntityFrameworkCore
 @inject EducationClubContext EducationClubContext
-@inject BehaviourService BehaviourService
+@inject AppGeneralSettings _appGeneralSettings
 @inject FileUploaderService FileUploaderService
 
 <style type="text/css">
@@ -86,7 +86,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        CurrentTutor = BehaviourService.AuthTutor;
+        CurrentTutor = _appGeneralSettings.AuthTutor;
         await GetAdditionalClass();
         imgUrl =  await FileUploaderService.GetImage(Folder.TUTOR, CurrentTutor.Id.ToString());
         isHeadermenuInit = true;

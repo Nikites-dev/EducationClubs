@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<BehaviourService>();
+builder.Services.AddSingleton<AppGeneralSettings>();
 builder.Services.AddSingleton<TutorMainPage>();
 builder.Services.AddSingleton<HeaderMenu>();
 builder.Services.AddSingleton<LessonCard>();

@@ -7,11 +7,11 @@
 @using Microsoft.VisualBasic
 @using MudBlazor.Extensions
 @inject EducationClubContext EducationClubContext
-@inject BehaviourService BehaviourService
+@inject AppGeneralSettings AppGeneralSettings
 
 <div class="background">
 
-@if (BehaviourService.authAccount == null)
+@if (AppGeneralSettings.authAccount == null)
 {
     <p>403</p><div>&nbsp;</div>
     <p>Forbidden</p>
@@ -29,58 +29,52 @@ else
 <div class="board">
     @if (isLessonBoardInit)
     {
-        <LessonBoard listLesson="_listLesson" AddClassList="_listAdditionalClasses" authTutor="tutor"/>
+        <LessonBoard listLesson="_listLesson" AddClassList="_listAdditionalClasses" authTutor="AppGeneralSettings.AuthTutor"/>
     }
 </div>
 
 @code {
     private List<AdditionalClass> _listAdditionalClasses = new List<AdditionalClass>();
-    public List<Lesson> _listLesson = new List<Lesson>(); 
-    private Tutor tutor = new Tutor();
+    public List<Lesson> _listLesson = new List<Lesson>();
     private bool isHeadermenuInit = false;
     private bool isLessonBoardInit = false;
-
-    private DateTime crntTime = DateTime.Now;
+    
     private DateTime firstDayOfWeek = DateTime.Now;
     private DateTime lastDayOfWeek = DateTime.Now;
     
     protected override async Task OnInitializedAsync()
     {
-        if (BehaviourService.authAccount == null)
+        if (AppGeneralSettings.authAccount == null)
         {
             return;
         }
 
+        if (AppGeneralSettings.AuthTutor == null)
+        {
+            return;
+        }
+        
         firstDayOfWeek = System.DateTime.Now.StartOfWeek(System.DayOfWeek.Monday);
         lastDayOfWeek = firstDayOfWeek.AddDays(6);
         
-        await GetTutor();
         await GetAdditionalClass();
         await GetListLessonOfWeek();
 
         isHeadermenuInit = true;
         isLessonBoardInit = true;
-
-        BehaviourService.AuthTutor = tutor;
+        
         // await Task.Run(() => GetAdditionalClass());
     }
 
     async Task GetAdditionalClass()
     {
-        _listAdditionalClasses = await EducationClubContext.AdditionalClasses.Where(xo => xo.TutorId == tutor.Id).ToListAsync();
+        _listAdditionalClasses = await EducationClubContext.AdditionalClasses.Where(xo => AppGeneralSettings.AuthTutor != null && xo.TutorId == AppGeneralSettings.AuthTutor.Id).ToListAsync();
     }
 
-    async Task GetTutor()
-    {
-        tutor = await EducationClubContext.Tutors.FirstOrDefaultAsync(x => x.AccountId.Value == BehaviourService.authAccount.Id);
-    }
-    
     async Task GetListLessonOfWeek()
     {
         _listLesson = await EducationClubContext.Lessons.Where(x => 
-            x.TimeStart >= firstDayOfWeek &&
-            x.TimeFinish <= lastDayOfWeek &&
-            x.AdditionalClass.Tutor.Id == tutor.Id
+            x.AdditionalClass != null && AppGeneralSettings.AuthTutor != null && x.TimeStart >= firstDayOfWeek && x.TimeFinish <= lastDayOfWeek && x.AdditionalClass.Tutor.Id == AppGeneralSettings.AuthTutor.Id
             ).ToListAsync();
     }
 }

@@ -1,5 +1,5 @@
 ﻿@using Microsoft.EntityFrameworkCore
-@inject BehaviourService BehaviourService
+@inject AppGeneralSettings _appGeneralSettings
 @inject EducationClubContext EducationClubContext
 @inject NavigationManager NavigationManager
 @using EducationClubs.ScaffoldedModels;
@@ -54,9 +54,9 @@
     
     protected override async Task OnInitializedAsync()
     {
-        if (BehaviourService.authAccount != null)
+        if (_appGeneralSettings.authAccount != null)
         {
-            _tutor = BehaviourService.AuthTutor;
+            _tutor = _appGeneralSettings.AuthTutor;
         }
         else
         {
@@ -64,7 +64,7 @@
             _tutor.Surname = "Last Name";
         }
 
-        imgUrl = await FileUploaderService.GetImage(Folder.TUTOR, BehaviourService.AuthTutor.Id.ToString());
+        imgUrl = await FileUploaderService.GetImage(Folder.TUTOR, _appGeneralSettings.AuthTutor.Id.ToString());
     }
 
     void OpenPage(String deeplink)

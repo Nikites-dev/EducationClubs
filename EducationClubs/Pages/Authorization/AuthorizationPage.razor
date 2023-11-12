@@ -7,7 +7,7 @@
 @inject EducationClubContext educationClubContext
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
-@inject BehaviourService BehaviourService
+@inject AppGeneralSettings _appGeneralSettings
 
 <style>
     .mainBlock {
@@ -66,6 +66,7 @@
     private String password = "";
     private bool showLoader = false;
     private bool isDbConnect = false;
+    private Tutor tutor = new Tutor();
 
     RegisterAccountForm model = new RegisterAccountForm();
     
@@ -97,7 +98,7 @@
         {
             Console.WriteLine(e);
             isDbConnect = false;
-            Snackbar.Add("Сервер БД недоступен", Severity.Error, config => { config.ShowCloseIcon = false; });
+            ShowAlert("Сервер БД недоступен");
         }
         showLoader = false;
     }
@@ -112,15 +113,13 @@
     {
         if (model.Email.IsNullOrEmpty() || password.IsNullOrEmpty())
         {
-            Snackbar.Clear();
-            Snackbar.Add("Заполните все поля!", Severity.Error, config => { config.ShowCloseIcon = false; });
+            ShowAlert("Заполните все поля!");
             return;
         }
 
         if (!IsValidEmail(model.Email))
         {
-            Snackbar.Clear();
-            Snackbar.Add("некорректный email!", Severity.Error, config => { config.ShowCloseIcon = false; });
+            ShowAlert("Некорректный email!");
             return;
         }
 
@@ -142,25 +141,46 @@
         
         if (accountDb == null)
         {
-            Snackbar.Clear();
-            Snackbar.Add("Пользователь не существует", Severity.Error, config => { config.ShowCloseIcon = false; });
+            ShowAlert("Пользователь не существует");
             showLoader = false;
             return;
         }
 
-        BehaviourService.authAccount = accountDb;
-        if (accountDb.RoleId == 1)
+        _appGeneralSettings.authAccount = accountDb;
+
+        if (accountDb.RoleId == 2)
         {
-            NavigationManager.NavigateTo("/director/main");
+            await GetTutor();
+            _appGeneralSettings.AuthTutor = tutor;
+
+            if (tutor.Id != 0 && tutor.IsWorking == true)
+            {
+                NavigationManager.NavigateTo("/tutor/main");
+            }
+            else
+            {
+                ShowAlert("У пользователя нет доступа");
+            }
         }
         else
         {
-            NavigationManager.NavigateTo("/tutor/main");
+            NavigationManager.NavigateTo("/director/main");
         }
     }
 
     public bool IsValidEmail(string source)
     {
         return new EmailAddressAttribute().IsValid(source);
+    }
+    
+    async Task GetTutor()
+    {
+        tutor = await educationClubContext.Tutors.FirstOrDefaultAsync(x => x.AccountId.Value == _appGeneralSettings.authAccount.Id);
+    }
+
+    void ShowAlert(String message)
+    {
+        Snackbar.Clear();
+        Snackbar.Add(message, Severity.Error, config => { config.ShowCloseIcon = false; });
     }
 }

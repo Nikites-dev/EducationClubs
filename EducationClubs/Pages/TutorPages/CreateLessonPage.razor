@@ -4,7 +4,7 @@
 @using Microsoft.EntityFrameworkCore
 @using System.Globalization
 @inject EducationClubContext EducationClubContext
-@inject BehaviourService BehaviourService
+@inject AppGeneralSettings _appGeneralSettings
 @inject DateTimeService DateTimeService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
@@ -138,7 +138,7 @@
 
     async Task GetAdditionalClass()
     {
-        tutorAdditionalClasses = await EducationClubContext.AdditionalClasses.Where(xo => xo.TutorId == BehaviourService.AuthTutor.Id).ToListAsync();
+        tutorAdditionalClasses = await EducationClubContext.AdditionalClasses.Where(xo => xo.TutorId == _appGeneralSettings.AuthTutor.Id).ToListAsync();
     }
 
     async Task SaveLessons()
@@ -238,7 +238,7 @@
 
     async Task GetListLessonOfWeek()
     {
-        _listLesson = await EducationClubContext.Lessons.Where(x => x.AdditionalClass.Tutor.Id == BehaviourService.AuthTutor.Id).ToListAsync();
+        _listLesson = await EducationClubContext.Lessons.Where(x => x.AdditionalClass.Tutor.Id == _appGeneralSettings.AuthTutor.Id).ToListAsync();
     }
 
     async Task OpenDialog()
