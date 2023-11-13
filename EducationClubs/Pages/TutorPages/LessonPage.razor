@@ -38,7 +38,7 @@
                 <MudTd DataLabel="Surname">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Surname</MudTd>
                 <MudTd DataLabel="Name">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Name</MudTd>
                 <MudTd DataLabel="Patronymic">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Patronymic</MudTd>
-                <MudTd DataLabel="IsAttend"><MudCheckBox Disabled="BoolActive(EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault())" Checked="BoolActive(EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault())" Class="d-flex mx-auto" Color="Color.Info" @onclick="() => ToCheck(context)"></MudCheckBox></MudTd>
+                <MudTd DataLabel="IsAttend"><MudCheckBox Checked="BoolActive(EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault())" Class="d-flex mx-auto" Color="Color.Info" @onclick="() => ToCheck(context)"></MudCheckBox></MudTd>
                 <MudTd DataLabel="Delete"><MudButton Color="Color.Info" Variant="Variant.Outlined" @onclick="() => DeletingStudentFromClub(context)">Удалить</MudButton></MudTd>
             </RowTemplate>
             <PagerContent>
@@ -138,15 +138,24 @@
 
     public void ToCheck(Record record)
     {
-        var newAttendence = new Attendence()
-            {
-                StudentId = record.StudentId,
-                LessonId = lesson.Id,
-                IsAttend = false
-            };
+        if (!BoolActive(EducationClubContext.Students.Where(x => x.Id == record.StudentId).FirstOrDefault()))
+        {
+            var newAttendence = new Attendence()
+                {
+                    StudentId = record.StudentId,
+                    LessonId = lesson.Id,
+                    IsAttend = false
+                };
 
-        EducationClubContext.Attendences.Add(newAttendence);
-        EducationClubContext.SaveChanges();
+            EducationClubContext.Attendences.Add(newAttendence);
+            EducationClubContext.SaveChanges();
+        }
+        else
+        {
+            var attend = EducationClubContext.Attendences.Where(x => x.StudentId == record.StudentId && x.LessonId == lesson.Id).FirstOrDefault();
+            EducationClubContext.Attendences.Remove(attend);
+            EducationClubContext.SaveChanges();
+        }
         Update();
     }
 
@@ -162,6 +171,7 @@
         EducationClubContext.SaveChanges();
 
         Snackbar.Add("Ученик успешно удален с кружка!", Severity.Success, config => { config.ShowCloseIcon = false; });
+        Update();
     }
 
     private bool FilterFuncThree(Student element) => FilterFuncFour(element, searchString);
@@ -185,7 +195,7 @@
 
     public async Task OnRowClick(TableRowClickEventArgs<Student> args)
     {
-        if (EducationClubContext.Records.Where(x => x.StudentId == selectedItemOne.Id && x.AdditionalClassId == additionalClass.Id).FirstOrDefault() == null)
+        if (EducationClubContext.Records.Where(x => x.StudentId == selectedItemOne.Id && x.AdditionalClassId == additionalClass.Id && x.Active == true).FirstOrDefault() == null)
         {
             var result = await DialogService.Show<ConfirmDialog>($"Добавить этого ученика? {selectedItemOne.Surname} {selectedItemOne.Name} {selectedItemOne.Patronymic}").Result;
 
