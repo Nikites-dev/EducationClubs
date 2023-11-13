@@ -4,21 +4,9 @@
 @using System.Globalization;
 @inject EducationClubContext EducationClubContext
 
+<HeaderMenu />
+
 <MudPaper>
-    <MudAppBar Style="margin-top: 2%; background-color: white; display: block; width: 90%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
-        <MudButton>
-            Главная страница
-        </MudButton>
-        <MudButton>
-            Преподаватели
-        </MudButton>
-        <MudButton>
-            Кружки
-        </MudButton>
-        <MudButton>
-            Ученики
-        </MudButton>
-    </MudAppBar>
     <MudPaper Style="display: flex; position: absolute; left:15%; top: 15%; align-self: center; width: 70%; height: 10%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right">
         <MudDatePicker Style="width: 25%; margin: 8px; " Editable="true" Date="date" ImmediateText="true" Placeholder="день.месяц.год" DateFormat="@dateFormat" TextChanged="DatePickerTextChanged" Clearable="true" />
         <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">

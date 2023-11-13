@@ -17,6 +17,12 @@
         justify-content: center;
         align-items: center;
     }
+
+    .camera {
+        background-color: #3567bf;
+        left: 130px;
+        bottom: 50px;
+    }
 </style>
 @if (isHeadermenuInit)
 {
@@ -36,35 +42,33 @@
             {
                 <MudAvatar Style="height:300px; width:300px; font-size:2rem;" Color="Color.Dark" Image="https://users.cf.talkfusion.com/default-user-profile-image.png"></MudAvatar>   
             }
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+                    <ButtonTemplate>
+                        <MudIconButton HtmlTag="label"
+                                   Icon="@Icons.Material.Filled.PhotoCamera"
+                                   for="@context" Class="camera">
+                        </MudIconButton>
+                    </ButtonTemplate>
+                </MudFileUpload>
         </div>
-        
-        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
-            <ButtonTemplate>
-                <MudIconButton HtmlTag="label"
-                               Color="Color.Info"
-                               Icon="@Icons.Material.Filled.PhotoCamera"
-                               for="@context">
-                </MudIconButton>
-            </ButtonTemplate>
-        </MudFileUpload>
 
         <div style="flex: 50%; margin: 10px">
             <div style="display: inline-flex; ">
                 <MudText Style="font-size: 24px; margin: 10px;">Фамилия</MudText>
-                <MudTextField @bind-Value="CurrentTutor.Surname" Variant="Variant.Outlined" Style="border: solid 1px #869E9E; height:30px; margin: 10px 10px 10px 50px;" />
+                    <MudTextField @bind-Value="CurrentTutor.Surname" Variant="Variant.Outlined" Style="border: solid 1px #3567bf; border-radius: 5px; height:30px; margin: 10px 10px 10px 50px;" />
             </div>
             <div style="display: inline-flex;">
                 <MudText Style="font-size: 24px; margin: 10px;">Имя</MudText>
-                <MudTextField @bind-Value="CurrentTutor.Name" Variant="Variant.Outlined" Style="border: solid 1px #869E9E; height:30px; margin: 10px 10px 10px 107px;" />
+                    <MudTextField @bind-Value="CurrentTutor.Name" Variant="Variant.Outlined" Style="border: solid 1px #3567bf; border-radius: 5px; height:30px; margin: 10px 10px 10px 107px;" />
             </div>
             <div style="display: inline-flex;">
                 <MudText Style="font-size: 24px; margin: 10px;">Отчество</MudText>
-                <MudTextField @bind-Value="CurrentTutor.Patronymic" Variant="Variant.Outlined" Style="border: solid 1px #869E9E; height:30px; margin: 10px 10px 10px 49px;" />
+                    <MudTextField @bind-Value="CurrentTutor.Patronymic" Variant="Variant.Outlined" Style="border: solid 1px #3567bf; border-radius: 5px; height:30px; margin: 10px 10px 10px 49px;" />
             </div>
             <div>
                 <MudText Style="font-size: 24px; margin: 30px 10px 10px 10px;">Список кружков</MudText>
                 <div style="overflow: scroll; height: 100px">
-                    <MudTable Items="@_additionalClasses" Hover="true">
+                        <MudTable Items="@_additionalClasses" Hover="true" Style="border: solid 1px #3567bf; border-radius: 5px;">
                         <RowTemplate>
                             <MudTd DataLabel="Title">@context.Title</MudTd>
                         </RowTemplate>
