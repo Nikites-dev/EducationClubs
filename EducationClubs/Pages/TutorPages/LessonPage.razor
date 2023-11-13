@@ -21,7 +21,7 @@
         <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="@OpenDialog">Добавить ученика</MudButton>
     </MudPaper>
     <MudPaper Style="position: absolute; left:15%; top: 28%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
-        <MudTable Items="@Elements" Filter="new Func<Student,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" >
+        <MudTable Items="@Elements" Filter="new Func<Attendence,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" >
             <ToolBarContent>
                 <MudText Typo="Typo.h6">@lesson.Title</MudText>
                 <MudSpacer />
@@ -34,10 +34,10 @@
                 <MudTh>Присутствие</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Surname">@context.Surname</MudTd>
-                <MudTd DataLabel="Name">@context.Name</MudTd>
-                <MudTd DataLabel="Patronymic">@context.Patronymic</MudTd>
-                <MudTd DataLabel="IsAttend"><input type="checkbox"></MudTd>
+                <MudTd DataLabel="Surname">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Surname</MudTd>
+                <MudTd DataLabel="Name">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Name</MudTd>
+                <MudTd DataLabel="Patronymic">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Patronymic</MudTd>
+                <MudTd DataLabel="IsAttend"><MudCheckBox @bind-Checked="context.IsAttend" Class="d-flex mx-auto" Color="Color.Info" @onclick="() => ToCheck(context)"></MudCheckBox></MudTd>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new int[] { 5 }" />
@@ -77,10 +77,10 @@
 
 @code {
     private string searchString = "";
-    private Student selectedItem = new Student();
-    private Student student = new Student();
-    private HashSet<Student> selectedItems = new HashSet<Student>();
-    private List<Student> Elements = new List<Student>();
+    private Attendence selectedItem = new Attendence();
+    private Attendence student = new Attendence();
+    private HashSet<Attendence> selectedItems = new HashSet<Attendence>();
+    private List<Attendence> Elements = new List<Attendence>();
     private List<Attendence> AttendenceList = new List<Attendence>();
 
     private string searchStringOne = "";
@@ -111,26 +111,27 @@
     public void Update()
     {
         Elements.Clear();
-        AttendenceList = EducationClubContext.Attendences.Where(x => x.LessonId == int.Parse(lessonId)).ToList();
-
-        foreach (var attendence in AttendenceList)
-        {
-            student = EducationClubContext.Students.Where(x => x.Id == attendence.StudentId).FirstOrDefault();
-            Elements.Add(student);
-        }
+        Elements = EducationClubContext.Attendences.Where(x => x.LessonId == int.Parse(lessonId)).ToList();
     }
 
-    private bool FilterFuncOne(Student element) => FilterFunc(element, searchString);
+    private bool FilterFuncOne(Attendence element) => FilterFunc(element, searchString);
 
-    private bool FilterFunc(Student element, string searchString)
+    private bool FilterFunc(Attendence element, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (element.Surname.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (element.Student.Surname.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (element.Student.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
+    }
+
+    public void ToCheck(Attendence attendence)
+    {
+        attendence.IsAttend = !attendence.IsAttend;
+        EducationClubContext.Attendences.Update(attendence);
+        EducationClubContext.SaveChanges();
     }
 
     private void OpenDialog()
