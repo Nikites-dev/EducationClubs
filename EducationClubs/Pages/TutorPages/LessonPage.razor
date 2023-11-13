@@ -183,11 +183,11 @@
         Snackbar.Configuration.PositionClass = position;
     }
 
-    public void OnRowClick(TableRowClickEventArgs<Student> args)
+    public async Task OnRowClick(TableRowClickEventArgs<Student> args)
     {
-        var result = DialogService.Show<ConfirmDialog>($"Добавить этого ученика? {selectedItemOne.Surname} {selectedItemOne.Name} {selectedItemOne.Patronymic}").Result;
+        var result = await DialogService.Show<ConfirmDialog>($"Добавить этого ученика? {selectedItemOne.Surname} {selectedItemOne.Name} {selectedItemOne.Patronymic}").Result;
 
-        if (!result.IsCanceled)
+        if (!result.Canceled)
         {
             var newAttendence = new Record()
                 {
@@ -196,8 +196,8 @@
                     Active = true
                 };
 
-            EducationClubContext.Records.Add(newAttendence);
-            EducationClubContext.SaveChanges();
+            await EducationClubContext.Records.AddAsync(newAttendence);
+            await EducationClubContext.SaveChangesAsync();
 
             Snackbar.Add("Ученик успешно добавлен!", Severity.Success, config => { config.ShowCloseIcon = false; });
             visible = false;

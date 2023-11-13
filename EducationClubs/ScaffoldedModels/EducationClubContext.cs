@@ -101,7 +101,6 @@ public partial class EducationClubContext : DbContext
         {
             entity.ToTable("Record");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.AdditionalClassId).HasColumnName("AdditionalClass_Id");
             entity.Property(e => e.StudentId).HasColumnName("Student_Id");
 
