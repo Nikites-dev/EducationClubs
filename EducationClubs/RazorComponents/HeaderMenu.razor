@@ -14,7 +14,7 @@
         </MudButton>
     </div>
     
-    @if (_appGeneralSettings.authAccount?.RoleId == 2 || _tutor.AccountId != null)
+    @if (_appGeneralSettings.authAccount.RoleId == 2)
     {
         <div class="box-profile" @onclick="(() => OpenPage(TUTOR_PROFILE))">
             <p class="title-text">@_tutor.Name</p>
@@ -34,19 +34,26 @@
     }
     else
     {
-        <MudButton Href="/director/main">
-            Главная страница
-        </MudButton>
-        <MudButton Href="/director/tutors">
-            Преподаватели
-        </MudButton>
-        <MudButton Href="/director/clubs">
-            Кружки
-        </MudButton>
-        <MudButton Href="/director/students">
-            Ученики
-        </MudButton>
+        <div>
+            <MudButton Href="/director/main">
+                Главная страница
+            </MudButton>
+            <MudButton Href="/director/tutors">
+                Преподаватели
+            </MudButton>
+            <MudButton Href="/director/clubs">
+                Кружки
+            </MudButton>
+            <MudButton Href="/director/students">
+                Ученики
+            </MudButton>
+        </div>
+        <MudSpacer/>
     }
+
+    <div>
+         <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Dark" @onclick="LogOut"></MudIconButton>
+    </div>
 </MudAppBar>
 
 @code {
@@ -56,6 +63,7 @@
     const String TUTOR_MAIN= "/tutor/main";
     const String TUTOR_LESSON_NEW= "/tutor/lesson/new";
     const String TUTOR_PROFILE= "/tutor/profile";
+    const String AUTH_PAGE= "/";
     
     String imgAuthTutor = "";
 
@@ -69,7 +77,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        if (_appGeneralSettings.authAccount != null && _appGeneralSettings.authAccount.Id == 2)
+        if (_appGeneralSettings.authAccount != null && _appGeneralSettings.authAccount.RoleId == 2)
         {
             _tutor = _appGeneralSettings.AuthTutor;
             imgUrl = await FileUploaderService.GetImage(Folder.TUTOR, _appGeneralSettings.AuthTutor.Id.ToString());
@@ -84,5 +92,12 @@
     void OpenPage(String deeplink)
     {
         NavigationManager.NavigateTo(deeplink);
+    }
+
+    void LogOut()
+    {
+        _appGeneralSettings.authAccount = new Account();
+        _appGeneralSettings.AuthTutor = new Tutor();
+        NavigationManager.NavigateTo(AUTH_PAGE);
     }
 }
