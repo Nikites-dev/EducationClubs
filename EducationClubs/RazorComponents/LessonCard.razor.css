@@ -7,7 +7,7 @@
 
 .cardLesson {
     display: flex;
-    min-height: 180px;
+    min-height: 175px;
     flex-direction: column;
     width: 550px;
     background: white;

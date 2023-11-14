@@ -1,20 +1,17 @@
 ﻿@using Microsoft.EntityFrameworkCore
 @inject AppGeneralSettings _appGeneralSettings
+@using EducationClubs.ScaffoldedModels
+@using Microsoft.IdentityModel.Tokens
 @inject EducationClubContext EducationClubContext
 @inject NavigationManager NavigationManager
-@using EducationClubs.ScaffoldedModels;
-@using Microsoft.IdentityModel.Tokens
 @inject FileUploaderService FileUploaderService
 
-<div class="menuHeader">
+<MudAppBar Style="margin-top: 1%; background-image: linear-gradient(180deg, #ced8e3 0%, #3567bf 80%); display: block; width: 95%; height: 8%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
     <div class="box1">
-        <div>
-            <p class="app" @onclick="(() => OpenPage(TUTOR_MAIN))">Educatucation Club</p>    
-        </div>
-        
-        <div class="nav-btns">
-            <MudButton Style="background-color: #f4f7fe; color: #4318ff" Variant="Variant.Filled"  StartIcon="@Icons.Material.Filled.Add" @onclick="(() => OpenPage(TUTOR_LESSON_NEW))">Занятие</MudButton>
-        </div>
+
+        <MudButton Style="color: white;">
+            Главная страница
+        </MudButton>
     </div>
 
     @if (_tutor.AccountId != 0 || _tutor.AccountId != null)
@@ -23,19 +20,19 @@
             <p class="title-text">@_tutor.Name</p>
             <p class="title-text">@_tutor.Surname</p>
            
-            <div class="img-circle">
+            <div>
                 @if (!imgUrl.IsNullOrEmpty())
                 {
-                    <img alt="img2" height="40" src="@imgUrl"/>
+                    <img alt="img2" height="50" src="@imgUrl"/>
                 }
                 else
                 {
-                    <img alt="img2" height="40" src="https://users.cf.talkfusion.com/default-user-profile-image.png"/>
+                    <img alt="img2" height="50" src="https://users.cf.talkfusion.com/default-user-profile-image.png"/>
                 }
             </div>
         </div>
     }   
-</div>
+</MudAppBar>
 
 @code {
     private Tutor _tutor = new Tutor();

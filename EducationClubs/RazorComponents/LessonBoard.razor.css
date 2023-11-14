@@ -1,7 +1,4 @@
-﻿* {
-    margin: 0;
-    padding: 0;
-}
+﻿
 
 .container-lesson {
     display: flex;
@@ -23,9 +20,8 @@
 .menu-tool-lesson {
     display: flex;
     justify-content: center;
-    
     align-items: center;
-    margin: auto;
+    margin-top: 5%;
     height: 60px;
     color: #4318FF;
     font-weight: bolder;
