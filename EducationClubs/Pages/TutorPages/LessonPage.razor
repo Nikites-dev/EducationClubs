@@ -1,5 +1,6 @@
 ﻿@using EducationClubs.RazorComponents.Dialogues;
 @using EducationClubs.ScaffoldedModels;
+@using Microsoft.EntityFrameworkCore;
 @inject IDialogService DialogService
 @inject EducationClubContext EducationClubContext
 @inject ISnackbar Snackbar
@@ -149,12 +150,14 @@
 
             EducationClubContext.Attendences.Add(newAttendence);
             EducationClubContext.SaveChanges();
+            EducationClubContext.Entry(newAttendence).State = EntityState.Detached;
         }
         else
         {
             var attend = EducationClubContext.Attendences.Where(x => x.StudentId == record.StudentId && x.LessonId == lesson.Id).FirstOrDefault();
             EducationClubContext.Attendences.Remove(attend);
             EducationClubContext.SaveChanges();
+            EducationClubContext.ChangeTracker.Clear();
         }
         Update();
     }
@@ -169,6 +172,7 @@
         club.Active = false;
         EducationClubContext.Records.Update(club);
         EducationClubContext.SaveChanges();
+        EducationClubContext.ChangeTracker.Clear();
 
         Snackbar.Add("Ученик успешно удален с кружка!", Severity.Success, config => { config.ShowCloseIcon = false; });
         Update();
@@ -210,6 +214,7 @@
 
                 await EducationClubContext.Records.AddAsync(newAttendence);
                 await EducationClubContext.SaveChangesAsync();
+                EducationClubContext.Entry(newAttendence).State = EntityState.Detached;
 
                 Snackbar.Add("Ученик успешно добавлен!", Severity.Success, config => { config.ShowCloseIcon = false; });
                 visible = false;
