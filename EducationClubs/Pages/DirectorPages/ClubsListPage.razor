@@ -3,6 +3,7 @@
 @using EducationClubs.RazorComponents.Dialogues;
 @using EducationClubs.ScaffoldedModels;
 @using System.Globalization;
+@using Microsoft.EntityFrameworkCore;
 @inject IDialogService DialogService
 @inject EducationClubContext EducationClubContext
 @inject ISnackbar Snackbar
@@ -28,7 +29,7 @@
             <ToolBarContent>
                 <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 <MudSpacer />
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="OpenDialog">Добавить кружок</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="() => OpenDialog(null)">Добавить кружок</MudButton>
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>Название</MudTh>
@@ -37,8 +38,8 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Название">@context.Title</MudTd>
-                <MudTd DataLabel="Руководитель">@EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Surname @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Name</MudTd>
-                <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Color="Color.Info">Просмотр</MudButton></MudTd>
+                <MudTd DataLabel="Руководитель">@EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Surname @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Name @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Patronymic</MudTd>
+                <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Color="Color.Info" @onclick="() => OpenDialog(context)">Просмотр</MudButton></MudTd>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new int[] { 8 }" />
@@ -47,11 +48,20 @@
     </MudPaper>
 </MudPaper>
 
-<MudDialog Class="content" @bind-IsVisible="visible">
+<MudDialog Class="content" @bind-IsVisible="visible" Options="closeButton">
     <TitleContent>
-        <MudText Style="font-size: 18px">
-            Добавление кружка:
-        </MudText>
+        @if (club == null)
+        {
+            <MudText Style="font-size: 18px">
+                Добавление кружка:
+            </MudText>
+        }
+        else
+        {
+            <MudText Style="font-size: 18px">
+                Кружок:
+            </MudText>
+        }
     </TitleContent>
     <DialogContent>
         <MudText Style="font-size: 16px">
@@ -61,17 +71,29 @@
         <MudText Style="font-size: 16px">
             Учитель:
         </MudText>
-        <MudSelect T="Tutor" @bind-Value="@tutor" Style="font-size: 16px; margin: 0; margin-bottom: 10px">
+        <MudSelect T="String" @bind-Value="@tutor" Style="font-size: 16px; margin: 0; margin-bottom: 10px">
             @foreach (var tutor in Tutors)
             {
-                <MudSelectItem Value="@tutor">
+                <MudSelectItem Value="@tutor.Id.ToString()">
                     @tutor.Surname @tutor.Name @tutor.Patronymic
                 </MudSelectItem>
             }
         </MudSelect>
-        <MudButton Variant="Variant.Outlined" Color="Color.Info" Class="d-flex mx-auto" Style="margin: 15px" @onclick="AddingNewClub">
-            Сохранить
-        </MudButton>
+        <br />
+        <div style="align-items: center; display: inline-block">
+            <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="margin: 10px" @onclick="AddingNewClub">
+                Сохранить
+            </MudButton>
+            @if (club != null)
+            {
+                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="margin: 10px" @onclick="DeleteClub">
+                    Удалить
+                </MudButton>
+            }
+            <MudButton Variant="Variant.Outlined" Color="Color.Info"  Style="margin: 10px" @onclick="Close">
+                Закрыть
+            </MudButton>
+        </div>
     </DialogContent>
 </MudDialog>
 
@@ -81,20 +103,40 @@
     private IEnumerable<Tutor> Tutors = new List<Tutor>();
     string tutorId;
     string title;
-    Tutor tutor;
+    string tutor;
     private bool visible;
-    private void OpenDialog() => visible = true;
+    AdditionalClass club;
     private string searchString = "";
     private AdditionalClass selectedItem = new AdditionalClass();
     private HashSet<AdditionalClass> selectedItems = new HashSet<AdditionalClass>();
+    private DialogOptions closeButton = new DialogOptions { CloseOnEscapeKey = false, CloseButton = false };
+
 
     private IEnumerable<AdditionalClass> Elements = new List<AdditionalClass>();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Elements = EducationClubContext.AdditionalClasses.ToList();
+        Elements = await EducationClubContext.AdditionalClasses.Where(x => x.IsActive == true).ToListAsync();
 
-        Tutors = EducationClubContext.Tutors.ToList();
+        Tutors = await EducationClubContext.Tutors.ToListAsync();
+    }
+
+    private void OpenDialog(AdditionalClass additionalClass)
+    {
+        if (club == null && additionalClass != null)
+        {
+            club = additionalClass;
+            title = club.Title;
+            tutor = club.TutorId.ToString();
+        }
+        else
+        {
+            club = null;
+            title = null;
+            tutor = null;
+        }
+
+        visible = true;
     }
 
     private bool FilterFuncOne(AdditionalClass element) => FilterFunc(element, searchString);
@@ -110,28 +152,62 @@
         return false;
     }
 
+    private void Close()
+    {
+        club = null;
+        visible = false;
+    }
+
+    void DeleteClub()
+    {
+        club.IsActive = false;
+        EducationClubContext.ChangeTracker.Clear();
+        EducationClubContext.AdditionalClasses.Update(club);
+        EducationClubContext.SaveChanges();
+        EducationClubContext.ChangeTracker.Clear();
+        Snackbar.Add("Кружок успешно удален!", Severity.Success);
+        visible = false;
+        club = null;
+        Elements = EducationClubContext.AdditionalClasses.Where(x => x.IsActive == true).ToList();
+    }
+
     void AddingNewClub()
     {
         if (title != null && tutor != null)
         {
-            if (EducationClubContext.AdditionalClasses.Where(x => x.Title == title).FirstOrDefault() == null)
-            { 
-                AdditionalClass newClub = new AdditionalClass()
-                {
-                    Title = title,
-                    IsActive = true,
-                    TutorId = tutor.Id
-                };
+            if (club == null)
+            {
+                if (EducationClubContext.AdditionalClasses.Where(x => x.Title == title).FirstOrDefault() == null)
+                { 
+                    AdditionalClass newClub = new AdditionalClass()
+                    {
+                        Title = title,
+                        IsActive = true,
+                        TutorId = int.Parse(tutor)
+                    };
 
-                EducationClubContext.AdditionalClasses.Add(newClub);
-                EducationClubContext.SaveChanges();
-                Snackbar.Add("Кружок успешно добавлен!", Severity.Success);
-                visible = false;
-                Elements = EducationClubContext.AdditionalClasses.ToList();
+                    EducationClubContext.AdditionalClasses.Add(newClub);
+                    EducationClubContext.SaveChanges();
+                    EducationClubContext.Entry(newClub).State = EntityState.Detached;
+                    Snackbar.Add("Кружок успешно добавлен!", Severity.Success);
+                    visible = false;
+                    Elements = EducationClubContext.AdditionalClasses.Where(x => x.IsActive == true).ToList();
+                }
+                else
+                {
+                    Snackbar.Add("Такой кружок уже существует", Severity.Warning);
+                }
             }
             else
             {
-                Snackbar.Add("Такой кружок уже существует", Severity.Warning);
+                club.Title = title;
+                club.TutorId = int.Parse(tutor);
+                EducationClubContext.AdditionalClasses.Update(club);
+                EducationClubContext.SaveChanges();
+                Snackbar.Add("Кружок успешно изменен!", Severity.Success);
+                visible = false;
+                club = null;
+                NavigationManager.NavigateTo("/director/clubs");
             }
         }
     }
