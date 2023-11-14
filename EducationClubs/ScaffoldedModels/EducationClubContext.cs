@@ -19,6 +19,7 @@ public partial class EducationClubContext : DbContext
     
     public virtual DbSet<Lesson> Lessons { get; set; }
     
+    public virtual DbSet<Record> Records { get; set; }
     public virtual DbSet<Role> Roles { get; set; }
     
     public virtual DbSet<Student> Students { get; set; }
@@ -94,6 +95,22 @@ public partial class EducationClubContext : DbContext
             entity.HasOne(d => d.DayOfWeek).WithMany(p => p.Lessons)
                 .HasForeignKey(d => d.DayOfWeekId)
                 .HasConstraintName("FK_Lesson_DayOfWeek");
+        });
+        
+        modelBuilder.Entity<Record>(entity =>
+        {
+            entity.ToTable("Record");
+
+            entity.Property(e => e.AdditionalClassId).HasColumnName("AdditionalClass_Id");
+            entity.Property(e => e.StudentId).HasColumnName("Student_Id");
+
+            entity.HasOne(d => d.AdditionalClass).WithMany(p => p.Records)
+                .HasForeignKey(d => d.AdditionalClassId)
+                .HasConstraintName("FK_Record_AdditionalClass");
+
+            entity.HasOne(d => d.Student).WithMany(p => p.Records)
+                .HasForeignKey(d => d.StudentId)
+                .HasConstraintName("FK_Record_Student");
         });
     
         modelBuilder.Entity<Role>(entity =>

@@ -12,5 +12,7 @@ public partial class AdditionalClass
 
     public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
 
+    public virtual ICollection<Record> Records { get; set; } = new List<Record>();
+
     public virtual Tutor? Tutor { get; set; }
 }

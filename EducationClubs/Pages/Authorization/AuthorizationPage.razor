@@ -2,33 +2,14 @@
 @using EducationClubs.ScaffoldedModels
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.IdentityModel.Tokens
 @inject EducationClubContext educationClubContext
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
-@inject BehaviourService BehaviourService
+@inject AppGeneralSettings _appGeneralSettings
 
 <style>
-    .labelStyle {
-        letter-spacing: 0;
-        text-transform: none;
-        text-align: left;
-        vertical-align: middle;
-        /*
-                font-size: 28px;*/
-        color: black;
-        font-weight: 400;
-        width: 100%
-    }
-
-    .inputStyle {
-        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
-        /*font-size: 22px;*/
-        width: 80%;
-        font-family: Playfair Display;
-        mix-blend-mode: normal;
-        align-items: inherit;
-    }
-
     .mainBlock {
         display: flex;
         box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px; 
@@ -59,7 +40,7 @@
             <MudText Style=" font-family: 'Mongolian Baiti'; margin: 0">
                 Логин
             </MudText>
-            <MudTextField T="String" Variant="Variant.Text" Style="font-size: 16px; margin: 0" @bind-Value="email" />
+            <MudTextField T="String" Variant="Variant.Text" @bind-Value="model.Email" For="@(() => model.Email)" />
             <br />
             <MudText Style=" font-family: 'Mongolian Baiti'; margin: 0">
                 Пароль
@@ -68,21 +49,58 @@
             <br />
             <br />
             <br />
-            <MudButton Variant="Variant.Outlined" Style="width: 40%; font-size: 16px; border: 3px solid #658dc3; color: #658dc3" Class="d-flex mx-auto" OnClick="Auth">Войти</MudButton>
+            
+            <MudButton Variant="Variant.Outlined" Style="width: 40%; font-size: 16px; border: 3px solid #658dc3; color: #658dc3" Class="d-flex mx-auto" @onclick="@Auth">Войти</MudButton>
+            
         </div>
         <div style="flex: 50%; text-align: center;">
             <MudImage src='/images/Image4.png' style="width:90%; object-fit: fill; overflow:hidden; flex: 50%; border-radius: 30px;"></MudImage>
         </div>
     </MudPaper>
+    @if (showLoader)
+    {
+        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />   
+    }
 </div>
-
 @code {
-    private String email = "";
     private String password = "";
+    private bool showLoader = false;
+    private bool isDbConnect = false;
+    private Tutor tutor = new Tutor();
 
-    protected override void OnInitialized()
+    RegisterAccountForm model = new RegisterAccountForm();
+    
+    public class RegisterAccountForm
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+    }
+    
+    protected override async Task OnInitializedAsync()
     {
         initSnakebarPosition(Defaults.Classes.Position.BottomCenter);
+    }
+
+    async Task CheckServerConnection()
+    {
+        showLoader = true;
+        try
+        {
+         var availableRole = await educationClubContext.Roles.FirstOrDefaultAsync(x => x.Id == 1);
+
+            if (availableRole != null)
+            {
+                isDbConnect = true;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            isDbConnect = false;
+            ShowAlert("Сервер БД недоступен");
+        }
+        showLoader = false;
     }
 
     void initSnakebarPosition(string position)
@@ -91,25 +109,78 @@
         Snackbar.Configuration.PositionClass = position;
     }
 
-    public async void Auth()
+    private async Task Auth()
     {
-        var accountDb = await educationClubContext.Accounts.FirstOrDefaultAsync(x => x.Login == email && x.Password == password);
-
-        if (accountDb == null)
+        if (model.Email.IsNullOrEmpty() || password.IsNullOrEmpty())
         {
-            Snackbar.Add("Пользователь не существует", Severity.Error, config => { config.ShowCloseIcon = false; });
+            ShowAlert("Заполните все поля!");
             return;
         }
 
-        BehaviourService.authAccount = accountDb;
-        if (accountDb.RoleId == 1)
+        if (!IsValidEmail(model.Email))
         {
-            NavigationManager.NavigateTo("/director/main");
+            ShowAlert("Некорректный email!");
+            return;
+        }
+
+        await CheckServerConnection();
+        Account accountDb = null;
+        
+        try
+        {
+            if (!isDbConnect)
+            {
+               return;
+            }
+            accountDb = await educationClubContext.Accounts.FirstOrDefaultAsync(x => x.Login == model.Email && x.Password == password);   
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        
+        if (accountDb == null)
+        {
+            ShowAlert("Пользователь не существует");
+            showLoader = false;
+            return;
+        }
+
+        _appGeneralSettings.authAccount = accountDb;
+
+        if (accountDb.RoleId == 2)
+        {
+            await GetTutor();
+            _appGeneralSettings.AuthTutor = tutor;
+
+            if (tutor.Id != 0 && tutor.IsWorking == true)
+            {
+                NavigationManager.NavigateTo("/tutor/main");
+            }
+            else
+            {
+                ShowAlert("У пользователя нет доступа");
+            }
         }
         else
         {
-            NavigationManager.NavigateTo("/tutor/main");
+            NavigationManager.NavigateTo("/director/main");
         }
     }
 
+    public bool IsValidEmail(string source)
+    {
+        return new EmailAddressAttribute().IsValid(source);
+    }
+    
+    async Task GetTutor()
+    {
+        tutor = await educationClubContext.Tutors.FirstOrDefaultAsync(x => x.AccountId.Value == _appGeneralSettings.authAccount.Id);
+    }
+
+    void ShowAlert(String message)
+    {
+        Snackbar.Clear();
+        Snackbar.Add(message, Severity.Error, config => { config.ShowCloseIcon = false; });
+    }
 }
