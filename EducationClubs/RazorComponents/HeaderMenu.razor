@@ -10,11 +10,11 @@
     <div class="box1">
 
         <MudButton Style="color: white;">
-            Главная страница
+            @Title
         </MudButton>
     </div>
-
-    @if (_tutor.AccountId != 0 || _tutor.AccountId != null)
+    
+    @if (_appGeneralSettings.authAccount?.RoleId == 2 || _tutor.AccountId != null)
     {
         <div class="box-profile" @onclick="(() => OpenPage(TUTOR_PROFILE))">
             <p class="title-text">@_tutor.Name</p>
@@ -31,7 +31,22 @@
                 }
             </div>
         </div>
-    }   
+    }
+    else
+    {
+        <MudButton Href="/director/main">
+            Главная страница
+        </MudButton>
+        <MudButton Href="/director/tutors">
+            Преподаватели
+        </MudButton>
+        <MudButton Href="/director/clubs">
+            Кружки
+        </MudButton>
+        <MudButton Href="/director/students">
+            Ученики
+        </MudButton>
+    }
 </MudAppBar>
 
 @code {
@@ -45,23 +60,25 @@
     String imgAuthTutor = "";
 
     [Parameter]
-    public String imgUrl { get; set; }
+    public String imgUrl { get; set; }  
 
+    [Parameter]
+    public String Title { get; set; }  
+    
     private string ValueChange { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
-        if (_appGeneralSettings.authAccount != null)
+        if (_appGeneralSettings.authAccount != null && _appGeneralSettings.authAccount.Id == 2)
         {
             _tutor = _appGeneralSettings.AuthTutor;
+            imgUrl = await FileUploaderService.GetImage(Folder.TUTOR, _appGeneralSettings.AuthTutor.Id.ToString());
         }
         else
         {
-            _tutor.Name = "First Name";
-            _tutor.Surname = "Last Name";
+            _tutor.Name = "Директор";
+            _tutor.Surname = "";
         }
-
-        imgUrl = await FileUploaderService.GetImage(Folder.TUTOR, _appGeneralSettings.AuthTutor.Id.ToString());
     }
 
     void OpenPage(String deeplink)
