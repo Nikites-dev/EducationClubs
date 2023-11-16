@@ -5,36 +5,35 @@
 @inject EducationClubContext EducationClubContext
 
 <HeaderMenu Title="Главная"/>
-<MudPaper>
-    <MudPaper Style="display: flex; position: absolute; left:15%; top: 15%; align-self: center; width: 70%; height: 10%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right">
+<MudPaper Style="display: flex; position: absolute; left:10%; top: 15%; align-self: center; width: 80%; height: 10%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right; border-radius: 10px;">
         <MudDatePicker Style="width: 25%; margin: 8px; " Editable="true" Date="date" ImmediateText="true" Placeholder="день.месяц.год" DateFormat="@dateFormat" TextChanged="DatePickerTextChanged" Clearable="true" />
-        <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
+        <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px; border-radius: 10px;">
             <div>
                 Учителя
             </div>
-            <div style="text-align:center; ">
-                <label style="color: rgba(118, 230, 153, 1)">@tutors</label>
+            <div style="text-align:center;">
+                <label style="color: #658dc3">@tutors</label>
             </div>
         </div>
-        <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
+    <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px; border-radius: 10px;">
             <div>
                 Ученики
             </div>
             <div style="text-align:center; margin-right: 5px">
-                <label style="color: rgba(242, 105, 159, 1)">@students</label>
+                <label style="color: #658dc3">@students</label>
             </div>
         </div>
-        <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px">
+    <div style=" margin: 5px; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; padding: 8px; border-radius: 10px">
             <div>
                 Кружки
             </div>
-            <div style="text-align:center; margin-right: 5px">
-                <label style="color: rgba(245, 166, 35, 1)">@classes</label>
+        <div style="text-align:center; margin-right: 5px; border-radius: 10px;">
+                <label style="color: #658dc3">@classes</label>
             </div>
         </div>
         
     </MudPaper>
-    <MudPaper Style="position: absolute; left:15%; top: 28%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; text-align:center">
+<MudPaper Style="position: absolute; left:10%; top: 28%; align-self: center; width: 80%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; text-align:center; border-radius: 10px;">
         <div>
             <MudText style="font-size: 24px">Сегодняшняя посещаемость кружков</MudText>
             <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Bottom" Width="400px" Height="400px"
@@ -42,7 +41,6 @@
             </MudChart>
         </div>
     </MudPaper>
-</MudPaper>
 
 @code {
     private IEnumerable<Student> ListOfStudents = new List<Student>();

@@ -5,29 +5,25 @@
 @inject EducationClubContext EducationClubContext
 
 <HeaderMenu Title="Ученики"/>
-<MudPaper>
-    <MudPaper Style="position: absolute; left:15%; top: 15%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
-        <MudTable Items="@Elements" Filter="new Func<Student,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem">
-            <ToolBarContent>
-                <MudSpacer />
-                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-            </ToolBarContent>
-            <HeaderContent>
-                <MudTh>Фамилия</MudTh>
-                <MudTh>Имя</MudTh>
-                <MudTh>Отчество</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Surname">@context.Surname</MudTd>
-                <MudTd DataLabel="Name">@context.Name</MudTd>
-                <MudTd DataLabel="Patronymic">@context.Patronymic</MudTd>
-            </RowTemplate>
-            <PagerContent>
-                <MudTablePager PageSizeOptions="new int[] { 8 }" />
-            </PagerContent>
-        </MudTable>
-    </MudPaper>
-</MudPaper>
+<MudTable Items="@Elements" Filter="new Func<Student,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" Style="position: absolute; left:10%; top: 15%; align-self: center; width: 80%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; border-radius: 10px;">
+    <ToolBarContent>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Фамилия</MudTh>
+        <MudTh>Имя</MudTh>
+        <MudTh>Отчество</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Surname">@context.Surname</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Patronymic">@context.Patronymic</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 7 }" />
+    </PagerContent>
+</MudTable>
 
 @code {
     private string searchString = "";

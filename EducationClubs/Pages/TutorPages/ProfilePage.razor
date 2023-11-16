@@ -31,7 +31,7 @@
 
 @if (_additionalClasses.Count() != 0 && CurrentTutor.Id != 0)
 {
-    <MudPaper Style="position: absolute; left:15%; top: 20%; width: 70%; height: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; ">
+    <MudPaper Style="position: absolute; left:10%; top: 15%; width: 80%; height: 80%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; border-radius: 10px;">
     <div class="mainblock"> 
         <div style="flex: 50%; text-align: center;">
             @if (!string.IsNullOrEmpty(imgUrl))
@@ -52,23 +52,23 @@
                 </MudFileUpload>
         </div>
 
-        <div style="flex: 50%; margin: 10px">
+        <div style="flex: 50%; margin-right: 30px">
             <div style="display: inline-flex; ">
                 <MudText Style="font-size: 24px; margin: 10px;">Фамилия</MudText>
-                    <MudTextField @bind-Value="CurrentTutor.Surname" Variant="Variant.Outlined" Style="border: solid 1px #3567bf; border-radius: 5px; height:30px; margin: 10px 10px 10px 50px;" />
+                    <MudTextField @bind-Value="CurrentTutor.Surname" Variant="Variant.Outlined" Style="border: solid 1px #3567bf; border-radius: 5px; height: 35px; margin: 10px 10px 10px 50px;" />
             </div>
             <div style="display: inline-flex;">
                 <MudText Style="font-size: 24px; margin: 10px;">Имя</MudText>
-                    <MudTextField @bind-Value="CurrentTutor.Name" Variant="Variant.Outlined" Style="border: solid 1px #3567bf; border-radius: 5px; height:30px; margin: 10px 10px 10px 107px;" />
+                    <MudTextField @bind-Value="CurrentTutor.Name" Variant="Variant.Outlined" Style="border: solid 1px #3567bf; border-radius: 5px; height: 35px; margin: 10px 10px 10px 107px;" />
             </div>
             <div style="display: inline-flex;">
                 <MudText Style="font-size: 24px; margin: 10px;">Отчество</MudText>
-                    <MudTextField @bind-Value="CurrentTutor.Patronymic" Variant="Variant.Outlined" Style="border: solid 1px #3567bf; border-radius: 5px; height:30px; margin: 10px 10px 10px 49px;" />
+                    <MudTextField @bind-Value="CurrentTutor.Patronymic" Variant="Variant.Outlined" Style="border: solid 1px #3567bf; border-radius: 5px; height: 35px; margin: 10px 10px 10px 49px;" />
             </div>
             <div>
                 <MudText Style="font-size: 24px; margin: 30px 10px 10px 10px;">Список кружков</MudText>
-                <div style="overflow: scroll; height: 100px">
-                        <MudTable Items="@_additionalClasses" Hover="true" Style="border: solid 1px #3567bf; border-radius: 5px;">
+                <div style="overflow: scroll; height: 150px">
+                    <MudTable Items="@_additionalClasses" Hover="true" Style="border: solid 1px #3567bf; border-radius: 5px;">
                         <RowTemplate>
                             <MudTd DataLabel="Title">@context.Title</MudTd>
                         </RowTemplate>
