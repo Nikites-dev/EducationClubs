@@ -36,7 +36,7 @@
     </MudPaper>
     <MudPaper Style="position: absolute; left:15%; top: 28%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; text-align:center">
         <div>
-            <MudText style="font-size: 24px">Сегодняшняя посещаемость кружков</MudText>
+            <MudText style="font-size: 24px">Сегодняшняя посещаемость занятий</MudText>
             <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Bottom" Width="400px" Height="400px"
                       InputData="@data" InputLabels="@labels">
             </MudChart>
@@ -111,10 +111,11 @@
 
                     if (Convert.ToDateTime(date).Day == lessonDate)
                     {
-                        int attend = EducationClubContext.Attendences.Where(x => x.LessonId == todayLesson.Id).Count();
+                        int attend = EducationClubContext.Attendences.Where(x => x.LessonId == todayLesson.Id && x.IsAttend == false).Count();
+                        AdditionalClass club = EducationClubContext.AdditionalClasses.Where(x => x.Id == todayLesson.AdditionalClassId).FirstOrDefault();
 
                         labelsList.Add(todayLesson.Title);
-                        dataList.Add(attend);
+                        dataList.Add(EducationClubContext.Records.Where(x => x.AdditionalClassId == club.Id && x.Active == true).Count() - attend);
                     }
                 }
             }
