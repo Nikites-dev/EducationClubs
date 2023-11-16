@@ -47,37 +47,39 @@
         }
     </TitleContent>
     <DialogContent>
-        <MudText Style="font-size: 16px">
-            Наименование:
-        </MudText>
-        <MudTextField T="String" Variant="Variant.Text" Style="font-size: 16px; margin: 0; margin-bottom: 10px" @bind-Value="@title" />
-        <MudText Style="font-size: 16px">
-            Учитель:
-        </MudText>
-        <MudSelect T="String" @bind-Value="@tutor" Style="font-size: 16px; margin: 0; margin-bottom: 10px">
-            @foreach (var tutor in Tutors)
-            {
-                <MudSelectItem Value="@tutor.Id.ToString()">
-                    @tutor.Surname @tutor.Name @tutor.Patronymic
-                </MudSelectItem>
-            }
-        </MudSelect>
-        <br />
-        <div style="align-items: center; display: inline-block">
-            <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="margin: 10px" @onclick="AddingNewClub">
-                Сохранить
-            </MudButton>
-            @if (club != null)
-            {
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="margin: 10px" @onclick="DeleteClub">
-                    Удалить
-                </MudButton>
-            }
-            <MudButton Variant="Variant.Outlined" Color="Color.Info"  Style="margin: 10px" @onclick="Close">
-                Закрыть
-            </MudButton>
+        <div class="box-content-row">
+            <div class="box-horizontal">
+                <MudIcon Icon="@Icons.Material.Filled.MenuBook" Color="Color.Dark" />
+                <p>Наименование:<span class="required"> *</span></p>
+            </div>
+            <MudTextField T="String" Variant="Variant.Outlined" Style="font-size: 16px; margin: 0; margin-bottom: 10px" @bind-Value="@title" />
+        </div>
+        <div class="box-content-row">
+            <div class="box-horizontal">
+                <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Dark" />
+                <p>Учитель:<span class="required"> *</span></p>
+            </div>
+
+            <MudSelect T="String" @bind-Value="@tutor" Variant="Variant.Outlined" Style="font-size: 16px; margin: 0; margin-bottom: 10px">
+                @foreach (var tutor in Tutors)
+                {
+                    <MudSelectItem Value="@tutor.Id.ToString()">
+                        @tutor.Surname @tutor.Name @tutor.Patronymic
+                    </MudSelectItem>
+                }
+            </MudSelect>
         </div>
     </DialogContent>
+    <DialogActions>
+        <div style="align-items: center; display: inline-block">
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px; font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="AddingNewClub">Сохранить</MudButton>
+            @if (club != null)
+            {
+                <MudButton Variant="Variant.Outlined" Style="margin: 5px; font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="DeleteClub">Удалить</MudButton>
+            }
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px; font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="Close">Закрыть</MudButton>
+        </div>
+    </DialogActions>
 </MudDialog>
 
 

@@ -194,7 +194,7 @@
     {
         if (EducationClubContext.Records.Where(x => x.StudentId == selectedItemOne.Id && x.AdditionalClassId == additionalClass.Id && x.Active == true).FirstOrDefault() == null)
         {
-            var result = await DialogService.Show<ConfirmDialog>($"Добавить этого ученика? {selectedItemOne.Surname} {selectedItemOne.Name} {selectedItemOne.Patronymic}").Result;
+            var result = await DialogService.Show<ConfirmDialog>($"Вы уверены, что хотите добавить этого ученика?").Result;
 
             if (!result.Canceled)
             {
