@@ -4,10 +4,12 @@
 @using System.Globalization
 @using System.Linq
 @using System.Threading
+@using EducationClubs.RazorComponents.Dialogues
 @using Microsoft.VisualBasic
 @using MudBlazor.Extensions
 @inject EducationClubContext EducationClubContext
 @inject AppGeneralSettings AppGeneralSettings
+@inject IDialogService DialogService
 
 <div class="background">
 
@@ -30,6 +32,7 @@ else
     @if (isLessonBoardInit)
     {
         <LessonBoard listLesson="_listLesson" AddClassList="_listAdditionalClasses" authTutor="AppGeneralSettings.AuthTutor"/>
+        <MudButton Style="background-color: #f4f7fe; color: #3567bf; border-radius: 10px; box-shadow: rgb(38, 57, 77) 0px 2px 5px -0px;" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" @onclick="OpenDialog">Занятие</MudButton>
     }
 </div>
 
@@ -76,6 +79,18 @@ else
         _listLesson = await EducationClubContext.Lessons.Where(x => 
             x.AdditionalClass != null && AppGeneralSettings.AuthTutor != null && x.TimeStart >= firstDayOfWeek && x.TimeFinish <= lastDayOfWeek && x.AdditionalClass.Tutor.Id == AppGeneralSettings.AuthTutor.Id
             ).ToListAsync();
+    }
+    
+    async Task OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        DialogResult result = await DialogService.Show<LessonAddingDialog>("", options).Result;
+
+        if (result.Canceled)
+        {
+            GetListLessonOfWeek();
+            StateHasChanged();
+        }
     }
 }
 

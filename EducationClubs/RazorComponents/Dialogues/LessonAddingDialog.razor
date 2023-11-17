@@ -105,6 +105,10 @@
 @code {
     private MudDateRangePicker _picker;
 
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+    
     private List<String> _listDaysWeek = new List<string>()
     {
         DateTimeService.GetDayNameRss(1),
@@ -123,6 +127,7 @@
     String crntLessonTitle = "";
     String crntDayofWeek = "";
     bool license_accepted = false;
+    bool confirm_create = false;
     public List<AdditionalClass> tutorAdditionalClasses = new List<AdditionalClass>();
     bool isInitHeademenu;
 
@@ -209,6 +214,7 @@
         if (license_accepted)
         {
             await AddLesson(listAccessDateTime, indxDayOfWeek);
+            Cancel();
         }
     }
 
@@ -248,5 +254,4 @@
             license_accepted = (bool)(result.Data ?? false);
         }
     }
-
 }
