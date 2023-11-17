@@ -10,30 +10,26 @@
 @inject NavigationManager NavigationManager
 
 <HeaderMenu Title="Кружки"/>
-<MudPaper>
-    <MudPaper Style="position: absolute; left:15%; top: 15%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
-        <MudTable Items="@Elements" Filter="new Func<AdditionalClass,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem">
-            <ToolBarContent>
-                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                <MudSpacer />
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="() => OpenDialog(null)">Добавить кружок</MudButton>
-            </ToolBarContent>
-            <HeaderContent>
-                <MudTh>Название</MudTh>
-                <MudTh>Руководитель</MudTh>
-                <MudTh>Просмотреть</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Название">@context.Title</MudTd>
-                <MudTd DataLabel="Руководитель">@EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Surname @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Name @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Patronymic</MudTd>
-                <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Color="Color.Info" @onclick="() => OpenDialog(context)">Просмотр</MudButton></MudTd>
-            </RowTemplate>
-            <PagerContent>
-                <MudTablePager PageSizeOptions="new int[] { 8 }" />
-            </PagerContent>
-        </MudTable>
-    </MudPaper>
-</MudPaper>
+<MudTable Items="@Elements" Filter="new Func<AdditionalClass,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" Style="position: absolute; left:10%; top: 15%; align-self: center; width: 80%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; border-radius: 10px">
+    <ToolBarContent>
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        <MudSpacer />
+        <MudButton Variant="Variant.Outlined" Style="width: 23%; margin: 5px;font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="() => OpenDialog(null)">Добавить кружок</MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Название</MudTh>
+        <MudTh>Руководитель</MudTh>
+        <MudTh>Просмотреть</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Название">@context.Title</MudTd>
+        <MudTd DataLabel="Руководитель">@EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Surname @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Name @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Patronymic</MudTd>
+        <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Style="font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 8px" @onclick="() => OpenDialog(context)">Просмотр</MudButton></MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 5 }" />
+    </PagerContent>
+</MudTable>
 
 <MudDialog Class="content" @bind-IsVisible="visible" Options="closeButton">
     <TitleContent>
@@ -51,37 +47,39 @@
         }
     </TitleContent>
     <DialogContent>
-        <MudText Style="font-size: 16px">
-            Наименование:
-        </MudText>
-        <MudTextField T="String" Variant="Variant.Text" Style="font-size: 16px; margin: 0; margin-bottom: 10px" @bind-Value="@title" />
-        <MudText Style="font-size: 16px">
-            Учитель:
-        </MudText>
-        <MudSelect T="String" @bind-Value="@tutor" Style="font-size: 16px; margin: 0; margin-bottom: 10px">
-            @foreach (var tutor in Tutors)
-            {
-                <MudSelectItem Value="@tutor.Id.ToString()">
-                    @tutor.Surname @tutor.Name @tutor.Patronymic
-                </MudSelectItem>
-            }
-        </MudSelect>
-        <br />
-        <div style="align-items: center; display: inline-block">
-            <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="margin: 10px" @onclick="AddingNewClub">
-                Сохранить
-            </MudButton>
-            @if (club != null)
-            {
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="margin: 10px" @onclick="DeleteClub">
-                    Удалить
-                </MudButton>
-            }
-            <MudButton Variant="Variant.Outlined" Color="Color.Info"  Style="margin: 10px" @onclick="Close">
-                Закрыть
-            </MudButton>
+        <div class="box-content-row">
+            <div class="box-horizontal">
+                <MudIcon Icon="@Icons.Material.Filled.MenuBook" Color="Color.Dark" />
+                <p>Наименование:<span class="required"> *</span></p>
+            </div>
+            <MudTextField T="String" Variant="Variant.Outlined" Style="font-size: 16px; margin: 0; margin-bottom: 10px" @bind-Value="@title" />
+        </div>
+        <div class="box-content-row">
+            <div class="box-horizontal">
+                <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Dark" />
+                <p>Учитель:<span class="required"> *</span></p>
+            </div>
+
+            <MudSelect T="String" @bind-Value="@tutor" Variant="Variant.Outlined" Style="font-size: 16px; margin: 0; margin-bottom: 10px">
+                @foreach (var tutor in Tutors)
+                {
+                    <MudSelectItem Value="@tutor.Id.ToString()">
+                        @tutor.Surname @tutor.Name @tutor.Patronymic
+                    </MudSelectItem>
+                }
+            </MudSelect>
         </div>
     </DialogContent>
+    <DialogActions>
+        <div style="align-items: center; display: inline-block">
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px; font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="AddingNewClub">Сохранить</MudButton>
+            @if (club != null)
+            {
+                <MudButton Variant="Variant.Outlined" Style="margin: 5px; font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="DeleteClub">Удалить</MudButton>
+            }
+            <MudButton Variant="Variant.Outlined" Style="margin: 5px; font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="Close">Закрыть</MudButton>
+        </div>
+    </DialogActions>
 </MudDialog>
 
 
@@ -104,7 +102,6 @@
     protected override async Task OnInitializedAsync()
     {
         Elements = await EducationClubContext.AdditionalClasses.Where(x => x.IsActive == true).ToListAsync();
-
         Tutors = await EducationClubContext.Tutors.ToListAsync();
     }
 

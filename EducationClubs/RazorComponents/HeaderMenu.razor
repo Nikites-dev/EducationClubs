@@ -7,15 +7,13 @@
 @inject FileUploaderService FileUploaderService
 
 <MudAppBar Style="margin-top: 1%; background-image: linear-gradient(180deg, #ced8e3 0%, #3567bf 80%); display: block; width: 95%; height: 8%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
-    <div class="box1">
-
-        <MudButton Style="color: white;">
-            @Title
-        </MudButton>
-    </div>
-    
     @if (_appGeneralSettings.authAccount.RoleId == 2)
     {
+        <div>
+            <MudButton Href="/tutor/main" Style="color: white; bottom: 2px; ">
+                Главная страница
+            </MudButton>
+        </div>
         <div class="box-profile" @onclick="(() => OpenPage(TUTOR_PROFILE))">
             <p class="title-text">@_tutor.Name</p>
             <p class="title-text">@_tutor.Surname</p>
@@ -23,11 +21,11 @@
             <div>
                 @if (!imgUrl.IsNullOrEmpty())
                 {
-                    <img alt="img2" height="50" src="@imgUrl"/>
+                    <img alt="img2" style="height: 50px;" src="@imgUrl"/>
                 }
                 else
                 {
-                    <img alt="img2" height="50" src="https://users.cf.talkfusion.com/default-user-profile-image.png"/>
+                    <img alt="img2" style="height: 50px;" src="https://users.cf.talkfusion.com/default-user-profile-image.png" />
                 }
             </div>
         </div>
@@ -35,16 +33,16 @@
     else
     {
         <div>
-            <MudButton Href="/director/main">
+            <MudButton Href="/director/main" Style="color: white; bottom: 2px; ">
                 Главная страница
             </MudButton>
-            <MudButton Href="/director/tutors">
+            <MudButton Href="/director/tutors" Style="color: white; bottom: 2px; ">
                 Преподаватели
             </MudButton>
-            <MudButton Href="/director/clubs">
+            <MudButton Href="/director/clubs" Style="color: white; bottom: 2px; ">
                 Кружки
             </MudButton>
-            <MudButton Href="/director/students">
+            <MudButton Href="/director/students" Style="color: white; bottom: 2px; ">
                 Ученики
             </MudButton>
         </div>
@@ -52,7 +50,7 @@
     }
 
     <div>
-         <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Dark" @onclick="LogOut"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; background-color: white; width: 37px; height: 37px; bottom: 3px; left: 30px; margin-right: 20px;" @onclick="LogOut"></MudIconButton>
     </div>
 </MudAppBar>
 

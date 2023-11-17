@@ -23,7 +23,7 @@
 <MudDialog Class="content">
     <TitleContent>
         <div class="box-title">
-            <p class="content-title">Добавление занятия</p>
+            <p class="content-title">Добавление учителя</p>
         </div>
     </TitleContent>
     <DialogContent>
@@ -33,7 +33,7 @@
                     <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Dark" />
                     <p>Фамилия:<span class="required"> *</span></p>
                 </div>
-                <MudTextField @bind-Value="surname" Label="Фамилия" Variant="Variant.Outlined" />
+                <MudTextField @bind-Value="surname" Variant="Variant.Outlined" />
             </div>
 
             <div class="box-content-row">
@@ -41,7 +41,7 @@
                     <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Dark" />
                     <p>Имя:<span class="required"> *</span></p>
                 </div>
-                <MudTextField @bind-Value="name" Label="Имя" Variant="Variant.Outlined" />
+                <MudTextField @bind-Value="name" Variant="Variant.Outlined" />
             </div>
 
             <div class="box-content-row">
@@ -49,7 +49,7 @@
                     <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Dark" />
                     <p>Отчество:</p>
                 </div>
-                <MudTextField @bind-Value="patronymic" Label="Отчество" Variant="Variant.Outlined" />
+                <MudTextField @bind-Value="patronymic" Variant="Variant.Outlined" />
             </div>
 
             <div class="box-content-row">
@@ -57,7 +57,7 @@
                     <MudIcon Icon="@Icons.Material.Filled.Markunread" Color="Color.Dark" />
                     <p>Почта:<span class="required"> *</span></p>
                 </div>
-                <MudTextField @bind-Value="@login" Label="Почта" Variant="Variant.Outlined" />
+                <MudTextField @bind-Value="@login" Variant="Variant.Outlined" />
             </div>
 
             <div class="box-content-row">
@@ -65,7 +65,7 @@
                     <MudIcon Icon="@Icons.Material.Filled.Password" Color="Color.Dark" />
                     <p>Пароль:<span class="required"> *</span></p>
                 </div>
-                <MudTextField @bind-Value="password" Label="Пароль" Variant="Variant.Outlined" />
+                <MudTextField @bind-Value="password" Variant="Variant.Outlined" />
             </div>
 
             <div class="box-content-row">
@@ -74,7 +74,7 @@
                     <p>Кружки:<span class="required"> *</span></p>
                 </div>
 
-                <MudSelect Dense="true" T="string" Label="Кружки" Variant="Variant.Outlined" @bind-Value="currentAdditionalClass">
+                <MudSelect Dense="true" T="string" Variant="Variant.Outlined" @bind-Value="currentAdditionalClass">
                     @foreach (var lesson in additionalClasses)
                     {
                         <MudSelectItem Value="@(lesson.Title)" />
@@ -84,7 +84,7 @@
         </div>
     </DialogContent>
     <DialogActions>
-        <MudButton Style="background-color: #4318ff; margin-top: 10px" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true" @onclick="@AddTutor">Сохранить</MudButton>
+        <MudButton Variant="Variant.Outlined" Style="margin: 15px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" Size="Size.Large" FullWidth="true" @onclick="@AddTutor">Сохранить</MudButton>
     </DialogActions>
 </MudDialog>
 

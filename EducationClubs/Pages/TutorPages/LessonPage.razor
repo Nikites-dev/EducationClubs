@@ -6,48 +6,41 @@
 @inject ISnackbar Snackbar
 @page "/tutor/lesson/{lessonId}"
 
-<MudPaper>
-    <MudAppBar Style="margin-top: 2%; background-color: white; display: block; width: 90%; left: 50%; transform: translate(-50%, 0);  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; border-radius: 10px">
-        <MudButton>
-            Главная страница
-        </MudButton>
-    </MudAppBar>
-    <MudPaper Style="display: flex; position: absolute; left:15%; top: 15%; align-self: center; width: 70%; height: 10%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right">
-        <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 15%; height: 60%; text-align:center;">
-            Начало @lesson.TimeStart
-        </MudContainer>
-        <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 15%; height: 60%; text-align:center;">
-            Конец @lesson.TimeFinish
-        </MudContainer>
-        <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="@OpenDialog">Добавить ученика</MudButton>
-    </MudPaper>
-    <MudPaper Style="position: absolute; left:15%; top: 28%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
-        <MudTable Items="@Elements" Filter="new Func<Record,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" >
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">@lesson.Title</MudText>
-                <MudSpacer />
-                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-            </ToolBarContent>
-            <HeaderContent>
-                <MudTh>Фамилия</MudTh>
-                <MudTh>Имя</MudTh>
-                <MudTh>Отчество</MudTh>
-                <MudTh>Отсутствие</MudTh>
-                <MudTh>Удаление</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Surname">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Surname</MudTd>
-                <MudTd DataLabel="Name">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Name</MudTd>
-                <MudTd DataLabel="Patronymic">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Patronymic</MudTd>
-                <MudTd DataLabel="IsAttend"><MudCheckBox Checked="BoolActive(EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault())" Class="d-flex mx-auto" Color="Color.Info" @onclick="() => ToCheck(context)"></MudCheckBox></MudTd>
-                <MudTd DataLabel="Delete"><MudButton Color="Color.Info" Variant="Variant.Outlined" @onclick="() => DeletingStudentFromClub(context)">Удалить</MudButton></MudTd>
-            </RowTemplate>
-            <PagerContent>
-                <MudTablePager PageSizeOptions="new int[] { 5 }" />
-            </PagerContent>
-        </MudTable>
-    </MudPaper>
+<HeaderMenu />
+
+<MudPaper Style="display: flex; position: absolute; left: 10%; top: 15%; align-self: center; width: 80%; height: 10%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right; border-radius: 10px; ">
+    <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 15%; height: 60%; text-align:center; margin-left: 0px; margin-right: 5px; border-radius: 10px;">
+        Начало @lesson.TimeStart.Value.ToString("g")
+    </MudContainer>
+    <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 15%; height: 60%; text-align:center; margin-left: 5px; margin-right: 0px; border-radius: 10px;">
+        Конец @lesson.TimeFinish.Value.ToString("g")
+    </MudContainer>
+    <MudButton Variant="Variant.Outlined" Style="width: 19%; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; margin-right: 15px; margin-left: 15px; border-radius: 10px;" @onclick="@OpenDialog">Добавить ученика</MudButton>
 </MudPaper>
+<MudTable Items="@Elements" Filter="new Func<Record,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" Style="position: absolute; left: 10%; top: 28%; align-self: center; width: 80%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; border-radius: 10px;">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">@lesson.Title</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Фамилия</MudTh>
+        <MudTh>Имя</MudTh>
+        <MudTh>Отчество</MudTh>
+        <MudTh>Отсутствие</MudTh>
+        <MudTh>Удаление</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Surname">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Surname</MudTd>
+        <MudTd DataLabel="Name">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Name</MudTd>
+        <MudTd DataLabel="Patronymic">@EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault().Patronymic</MudTd>
+        <MudTd DataLabel="IsAttend"><MudCheckBox Style="color: #658dc3;" Checked="BoolActive(EducationClubContext.Students.Where(x => x.Id == context.StudentId).FirstOrDefault())" Class="d-flex mx-auto" @onclick="() => ToCheck(context)"></MudCheckBox></MudTd>
+        <MudTd DataLabel="Delete"><MudButton Style="font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 10px;" Variant="Variant.Outlined" @onclick="() => DeletingStudentFromClub(context)">Удалить</MudButton></MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 5 }" />
+    </PagerContent>
+</MudTable>
 
 <MudDialog Class="content" @bind-IsVisible="visible" Options="options">
     <TitleContent>
@@ -201,7 +194,7 @@
     {
         if (EducationClubContext.Records.Where(x => x.StudentId == selectedItemOne.Id && x.AdditionalClassId == additionalClass.Id && x.Active == true).FirstOrDefault() == null)
         {
-            var result = await DialogService.Show<ConfirmDialog>($"Добавить этого ученика? {selectedItemOne.Surname} {selectedItemOne.Name} {selectedItemOne.Patronymic}").Result;
+            var result = await DialogService.Show<ConfirmDialog>($"Вы уверены, что хотите добавить этого ученика?").Result;
 
             if (!result.Canceled)
             {

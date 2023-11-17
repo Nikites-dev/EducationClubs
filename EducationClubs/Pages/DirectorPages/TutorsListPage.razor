@@ -7,13 +7,11 @@
 @inject EducationClubContext EducationClubContext
 
 <HeaderMenu Title="Преподаватели"/>
-<MudPaper>
-    <MudPaper Style="position: absolute; left:15%; top: 15%; align-self: center; width: 70%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px;">
-        <MudTable Items="@Elements" Filter="new Func<Tutor,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem">
+        <MudTable Items="@Elements" Filter="new Func<Tutor,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" Style="position: absolute; left:10%; top: 15%; align-self: center; width: 80%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; border-radius: 10px">
             <ToolBarContent>
                 <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 <MudSpacer />
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" Style="width: 20%; margin: 5px" @onclick="@OpenDialog">Добавить учителя</MudButton>
+        <MudButton Variant="Variant.Outlined" Style="width: 23%; margin: 5px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="@OpenDialog">Добавить учителя</MudButton>
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>Фамилия</MudTh>
@@ -25,14 +23,12 @@
                 <MudTd DataLabel="Фамилия">@context.Surname</MudTd>
                 <MudTd DataLabel="Имя">@context.Name</MudTd>
                 <MudTd DataLabel="Отчество">@context.Patronymic</MudTd>
-                <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Color="Color.Info">Просмотр</MudButton></MudTd>
+        <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Style="font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 8px">Просмотр</MudButton></MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager PageSizeOptions="new int[] { 8 }" />
+                <MudTablePager PageSizeOptions="new int[] { 5 }" />
             </PagerContent>
         </MudTable>
-    </MudPaper>
-</MudPaper>
 
 @code {
     private string searchString = "";

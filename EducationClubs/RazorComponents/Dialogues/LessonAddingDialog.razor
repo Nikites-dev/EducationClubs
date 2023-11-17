@@ -1,0 +1,257 @@
+﻿@using EducationClubs.RazorComponents.Dialogues;
+@using EducationClubs.ScaffoldedModels;
+@using Microsoft.EntityFrameworkCore
+@using System.Globalization
+@inject EducationClubContext EducationClubContext
+@inject AppGeneralSettings _appGeneralSettings
+@inject DateTimeService DateTimeService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog Class="content">
+    <TitleContent>
+        <div class="box-title">
+            <p class="content-title">Добавление занятия</p>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <div class="box-content">
+            <div class="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Draw" Color="Color.Dark" />
+                    <p>Кружок:<span class="required"> *</span></p>
+                </div>
+
+                <MudSelect Dense="true" T="string" @bind-Value="crntAddClass" Label="Хоббихорсинг" Variant="Variant.Outlined">
+                    @if (tutorAdditionalClasses.Count != 0)
+                    {
+                        foreach (var lesson in tutorAdditionalClasses)
+                        {
+                            <MudSelectItem Value="@(lesson.Title)" />
+                        }
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.MenuBook" Color="Color.Dark" />
+                    <p>Тема занятия:</p>
+                </div>
+                <MudTextField @bind-Value="crntLessonTitle" Label="Тема" Variant="Variant.Outlined" />
+            </div>
+
+            <div class="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Today" Color="Color.Dark" />
+                    <p>День недели:<span class="required"> *</span></p>
+                </div>
+
+                <MudSelect Dense="true" @bind-Value="crntDayofWeek" T="string" Label="Понедельник" Variant="Variant.Outlined">
+                    <MudSelectItem Value="@(DateTimeService.GetDayNameRss(1))" />
+                    <MudSelectItem Value="@(DateTimeService.GetDayNameRss(2))" />
+                    <MudSelectItem Value="@(DateTimeService.GetDayNameRss(3))" />
+                    <MudSelectItem Value="@(DateTimeService.GetDayNameRss(4))" />
+                    <MudSelectItem Value="@(DateTimeService.GetDayNameRss(5))" />
+                    <MudSelectItem Value="@(DateTimeService.GetDayNameRss(6))" />
+                </MudSelect>
+            </div>
+
+            <div class="box-content-row">
+
+                <div class="box-horizontal">
+                    <div class="box-vertical">
+                        <div class="box-horizontal">
+                            <MudIcon Icon="@Icons.Material.Filled.AccessTime" Color="Color.Dark" />
+                            <p>Начало занятия:<span class="required"> *</span></p>
+                        </div>
+                        <MudTimePicker Style="padding: 0; margin: 0" PickerVariant="PickerVariant.Dialog" @bind-Time="timeStart" />
+                    </div>
+
+                    <div class="box-vertical" style="margin-left: 20px">
+                        <div class="box-horizontal">
+                            <MudIcon Style="transform: rotate(360deg) scaleX(-1);" Icon="@Icons.Material.Filled.AccessTime" Color="Color.Dark" />
+                            <p>Конец занятия:<span class="required"> *</span></p>
+                        </div>
+                        <MudTimePicker Style="padding: 0; margin: 0" PickerVariant="PickerVariant.Dialog" @bind-Time="timeEnd" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-content-row">
+
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Dark" />
+                    <p>Период проведения:<span class="required"> *</span></p>
+                </div>
+
+                <MudStack>
+                    <MudDateRangePicker Style="padding: 0; margin: 0" @ref="_picker" @bind-DateRange="_dateRange" AutoClose="true">
+                        <PickerActions>
+                            <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Clear</MudButton>
+                            <MudButton OnClick="@(() => _picker.Close(false))">Cancel</MudButton>
+                            <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
+                        </PickerActions>
+                    </MudDateRangePicker>
+                </MudStack>
+            </div>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Outlined" Style="margin: 15px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" Size="Size.Large" FullWidth="true" @onclick="@SaveLessons">Сохранить</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudDateRangePicker _picker;
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+    
+    private List<String> _listDaysWeek = new List<string>()
+    {
+        DateTimeService.GetDayNameRss(1),
+        DateTimeService.GetDayNameRss(2),
+        DateTimeService.GetDayNameRss(3),
+        DateTimeService.GetDayNameRss(4),
+        DateTimeService.GetDayNameRss(5),
+        DateTimeService.GetDayNameRss(6)
+    };
+
+    private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(6).Date);
+    public List<Lesson> _listLesson = new List<Lesson>();
+    TimeSpan? timeStart = new TimeSpan(8, 00, 00);
+    TimeSpan? timeEnd = new TimeSpan(9, 30, 00);
+    String crntAddClass = "";
+    String crntLessonTitle = "";
+    String crntDayofWeek = "";
+    bool license_accepted = false;
+    bool confirm_create = false;
+    public List<AdditionalClass> tutorAdditionalClasses = new List<AdditionalClass>();
+    bool isInitHeademenu;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAdditionalClass();
+        await GetListLessonOfWeek();
+        isInitHeademenu = true;
+        initSnakebarPosition(Defaults.Classes.Position.BottomCenter);
+    }
+
+    async Task GetAdditionalClass()
+    {
+        tutorAdditionalClasses = await EducationClubContext.AdditionalClasses.Where(xo => xo.TutorId == _appGeneralSettings.AuthTutor.Id).ToListAsync();
+    }
+
+    async Task SaveLessons()
+    {
+        if (!isLessonValidate())
+        {
+            return;
+        }
+        await GetListLessonOfWeek();
+        await CheckLessonsIntegrate();
+    }
+
+    bool isLessonValidate()
+    {
+        if (timeStart > timeEnd)
+        {
+            Snackbar.Add("Время начала больше времени окончания!", Severity.Error, config => { config.ShowCloseIcon = false; });
+            return false;
+        }
+
+        if (crntAddClass == "")
+        {
+            Snackbar.Add("Кружок не выбран!", Severity.Error, config => { config.ShowCloseIcon = false; });
+            return false;
+        }
+
+        if (crntDayofWeek == "")
+        {
+            Snackbar.Add("Выберите день недели!", Severity.Error, config => { config.ShowCloseIcon = false; });
+            return false;
+        }
+        return true;
+    }
+
+    void initSnakebarPosition(string position)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = position;
+    }
+
+    async Task CheckLessonsIntegrate()
+    {
+        var indxDayOfWeek = _listDaysWeek.FindIndex(x => x == crntDayofWeek) + 1;
+
+        List<DateTime> listAccessDateTime = new List<DateTime>();
+
+        for (DateTime date = _dateRange.Start.Value; date <= _dateRange.End; date = date.AddDays(1))
+        {
+            if ((int)date.DayOfWeek != indxDayOfWeek)
+            {
+                continue;
+            }
+
+            var isLessonExist = _listLesson.FirstOrDefault(x =>
+                IsTimeIntersects(x.TimeStart.Value, x.TimeFinish.Value,
+                    date + timeStart.Value, date + timeEnd.Value)) != null;
+
+            if (isLessonExist == false)
+            {
+                listAccessDateTime.Add(date);
+            }
+            else
+            {
+                Snackbar.Add($"Дата зянята {date.ToShortDateString()} {(date + timeStart.Value).ToShortTimeString()}", Severity.Error, config => { config.ShowCloseIcon = false; });
+                return;
+            }
+        }
+        await OpenDialog();
+
+        if (license_accepted)
+        {
+            await AddLesson(listAccessDateTime, indxDayOfWeek);
+            Cancel();
+        }
+    }
+
+    public bool IsTimeIntersects(DateTime firstTimeStart, DateTime firstTimeEnd, DateTime secondTimeStart, DateTime secondTimeEnd)
+    {
+        return firstTimeStart < secondTimeEnd && firstTimeEnd > secondTimeStart;
+    }
+
+    async Task AddLesson(List<DateTime> listAccessDateTime, int indxDayOfWeek)
+    {
+        foreach (var date in listAccessDateTime)
+        {
+            Lesson lesson = new Lesson();
+            lesson.Title = crntLessonTitle;
+            lesson.TimeStart = date + timeStart;
+            lesson.TimeFinish = date + timeEnd;
+            lesson.AdditionalClassId = tutorAdditionalClasses.Where(x => x.Title == crntAddClass).FirstOrDefault().Id;
+            lesson.DayOfWeekId = indxDayOfWeek;
+
+            await EducationClubContext.Lessons.AddAsync(lesson);
+            await EducationClubContext.SaveChangesAsync();
+        }
+        Snackbar.Add("Занятия добавлены!", Severity.Success, config => { config.ShowCloseIcon = false; });
+    }
+
+    async Task GetListLessonOfWeek()
+    {
+        _listLesson = await EducationClubContext.Lessons.Where(x => x.AdditionalClass.Tutor.Id == _appGeneralSettings.AuthTutor.Id).ToListAsync();
+    }
+
+    async Task OpenDialog()
+    {
+        var result = await DialogService.Show<ConfirmDialog>("Добавить занятия?").Result;
+
+        if (!result.Canceled)
+        {
+            license_accepted = (bool)(result.Data ?? false);
+        }
+    }
+}
