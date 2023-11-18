@@ -1,0 +1,29 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+.time-box {
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.p-title {
+    font-size: 13px;
+    color: rgba(7, 15, 38, 0.32);
+}
+
+.p-time {
+    font-size: 26px;
+    color: #070f26;
+}
+
+.row-box {
+    display: flex;
+    flex-direction: row;
+    
+}

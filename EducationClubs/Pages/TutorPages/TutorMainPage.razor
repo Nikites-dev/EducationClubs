@@ -10,7 +10,7 @@
 @inject EducationClubContext EducationClubContext
 @inject AppGeneralSettings AppGeneralSettings
 @inject IDialogService DialogService
-<MudButton Style="background-color: #f4f7fe; float: right; color: #3567bf; position: absolute; top: 90px; right: 214px; border-radius: 10px; box-shadow: rgb(38, 57, 77) 0px 2px 5px -0px;" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" @onclick="OpenDialog">Занятие</MudButton>
+<MudButton DisableElevation="true" Style="background-color: #dfeaf6; float: right; color: #3567bf;  position: absolute; top: 90px; right: 214px; border-radius: 10px;" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" @onclick="OpenDialog">Занятие</MudButton>
 <div class="board">
     @if (isLessonBoardInit)
     {

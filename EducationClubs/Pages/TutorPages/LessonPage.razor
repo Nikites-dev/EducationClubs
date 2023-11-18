@@ -8,20 +8,38 @@
 
 <HeaderMenu />
 
-<MudPaper Style="display: flex; position: absolute; left: 10%; top: 15%; align-self: center; width: 80%; height: 10%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; align-items: center; justify-content: right; border-radius: 10px; ">
-    <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 15%; height: 60%; text-align:center; margin-left: 0px; margin-right: 5px; border-radius: 10px;">
-        Начало @lesson.TimeStart.Value.ToString("g")
-    </MudContainer>
-    <MudContainer Style="box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; width: 15%; height: 60%; text-align:center; margin-left: 5px; margin-right: 0px; border-radius: 10px;">
-        Конец @lesson.TimeFinish.Value.ToString("g")
-    </MudContainer>
-    <MudButton Variant="Variant.Outlined" Style="width: 19%; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; margin-right: 15px; margin-left: 15px; border-radius: 10px;" @onclick="@OpenDialog">Добавить ученика</MudButton>
+<MudPaper Elevation="0" Style="display: flex; position: absolute; border: #dce1e6 2px solid; left: 10%; top: 15%; align-self: center; width: 80%; height: 10%; align-items: center; justify-content: right; border-radius: 10px; ">
+   
+    <div class="time-box">
+        <p class="p-title">Тема занятия:</p>
+        <div class="row-box">
+            <MudTextField MaxLength="50" Style="height: 40px" T="String" @bind-Value="@lesson.Title" Variant="Variant.Outlined"></MudTextField>
+            <MudIconButton Icon="@Icons.Material.Filled.BorderColor" @onclick="UpdateLesson"></MudIconButton>
+        </div>
+        <p class="p-title" style="color: white">Начало</p>
+    </div>
+    
+    <MudSpacer/>
+    
+    <div class="time-box">
+        <p class="p-title">Начало:</p>
+        <p class="p-time">@GetShortTime(lesson.TimeStart)</p>
+        <p class="p-title" style="color: white">Начало</p>
+    </div>
+    
+    <div class="time-box">
+        <p class="p-title">Конец:</p>
+        <p class="p-time">@GetShortTime(lesson.TimeFinish)</p>
+        <p class="p-title" style="color: white">Конец</p>
+    </div>
+    
+    <MudButton DisableElevation="true" Variant="Variant.Filled" Style="width: 19%; font-size: 13px; background: #dfeaf6; color: #346297; margin-right: 15px; margin-left: 15px; border-radius: 10px;" @onclick="@OpenDialog">Добавить ученика</MudButton>
 </MudPaper>
-<MudTable Items="@Elements" Filter="new Func<Record,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" Style="position: absolute; left: 10%; top: 28%; align-self: center; width: 80%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; border-radius: 10px;">
+<MudTable Items="@Elements" Elevation="0" Filter="new Func<Record,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" Style="position: absolute; left: 10%; top: 28%; align-self: center; width: 80%; border: #dce1e6 2px solid; border-radius: 10px;">
     <ToolBarContent>
         <MudText Typo="Typo.h6">@lesson.Title</MudText>
         <MudSpacer />
-        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        <MudTextField @bind-Value="searchString" Placeholder="Найти ученика" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
         <MudTh>Фамилия</MudTh>
@@ -49,7 +67,7 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTable @ref="_table" T="Student" Items="@Students" Filter="new Func<Student,bool>(FilterFuncThree)" @bind-SelectedItem="selectedItemOne" @bind-SelectOnRowClick="@_selectOnRowClick" Hover="true" OnRowClick="@OnRowClick">
+        <MudTable @ref="_table" T="Student" Items="@Students" Filter="new Func<Student,bool>(FilterFuncThree)" @bind-SelectedItem="selectedItemOne" @bind-SelectOnRowClick="@_selectOnRowClick" Hover="true" @OnRowClick="@OnRowClick">
             <ToolBarContent>
                 <MudSpacer />
                 <MudTextField @bind-Value="searchStringOne" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -85,7 +103,6 @@
     private bool IsAdded = false;
     private bool _selectOnRowClick = true;
     private MudTable<Student> _table;
-
     private bool visible;
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
     AdditionalClass additionalClass;
@@ -218,5 +235,19 @@
         {
             Snackbar.Add("Ученик уже добавлен в кружок", Severity.Warning, config => { config.ShowCloseIcon = false; });
         }
+    }
+
+    public void UpdateLesson()
+    {
+        EducationClubContext.Lessons.Update(lesson);
+        EducationClubContext.SaveChanges();
+        EducationClubContext.ChangeTracker.Clear();
+        Update();
+    }
+
+    String GetShortTime(DateTime? dateTime)
+    {
+        DateTime convertDate = (DateTime) dateTime;
+        return convertDate.ToShortTimeString();
     }
 }
