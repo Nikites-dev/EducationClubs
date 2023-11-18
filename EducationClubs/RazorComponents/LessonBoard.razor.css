@@ -23,7 +23,7 @@
     align-items: center;
     margin-top: 5%;
     height: 60px;
-    color: #4318FF;
+    color: #0177ff;
     font-weight: bolder;
     font-size: 16px;
 }
@@ -36,7 +36,7 @@ hr.solid {
 }
 
 .btn-nav {
-    background: #4318FF;
+    background: #0177ff;
     padding: 10px;
     margin-right: 10px;
     margin-left: 10px;

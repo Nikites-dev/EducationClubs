@@ -10,11 +10,11 @@
 @inject IDialogService DialogService
 
 <div class="menu-tool-lesson">
-    <MudIconButton Style="background-image: linear-gradient(180deg, #ced8e3 0%, #3567bf 80%); box-shadow: rgb(38, 57, 77) 0px 3px 10px -0px; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" @onclick="() => MoveListLessonOfWeeks(false)"></MudIconButton>
+    <MudIconButton Style="background: #0077ff; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" @onclick="() => MoveListLessonOfWeeks(false)"></MudIconButton>
     <button @onclick="@GetListLessonOfWeeks">@GetShortDate(firstDayOfWeek)</button>
     <hr class="solid">
     <button @onclick="@GetListLessonOfWeeks">@GetShortDate(lastDayOfWeek)</button>
-    <MudIconButton Style="background-image: linear-gradient(180deg, #ced8e3 0%, #3567bf 80%); box-shadow: rgb(38, 57, 77) 0px 3px 10px -0px; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" @onclick="() => MoveListLessonOfWeeks(true)"></MudIconButton>
+    <MudIconButton Style="background: #0077ff; color: white; height: 40px; width: 40px; margin: 10px" Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" @onclick="() => MoveListLessonOfWeeks(true)"></MudIconButton>
   
 </div>
 
