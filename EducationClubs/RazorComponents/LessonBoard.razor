@@ -125,9 +125,6 @@
 
     List<Lesson> GetLessonsOfWeek(int weekId)
     {
-        // listLesson = listLesson.Where(x => x.DayOfWeekId == weekId).OrderBy(x => x.TimeStart).ToList();
-        // return listLesson;
-        
         return listLesson.Where(x => x.DayOfWeekId == weekId).ToList();
     }
     
@@ -166,8 +163,6 @@
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         DialogService.Show<LessonAddingDialog>("", options);
-        
-        var s = listLesson.Count;
     }
 
     void OpenPage(String deeplink)
