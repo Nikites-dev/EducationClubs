@@ -67,7 +67,7 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTable @ref="_table" T="Student" Items="@Students" Filter="new Func<Student,bool>(FilterFuncThree)" @bind-SelectedItem="selectedItemOne" @bind-SelectOnRowClick="@_selectOnRowClick" Hover="true" @OnRowClick="@OnRowClick">
+        <MudTable @ref="_table" T="Student" Items="@Students" Filter="new Func<Student,bool>(FilterFuncThree)" @bind-SelectedItem="selectedItemOne" @bind-SelectOnRowClick="@_selectOnRowClick" Hover="true" OnRowClick="@OnRowClick">
             <ToolBarContent>
                 <MudSpacer />
                 <MudTextField @bind-Value="searchStringOne" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
