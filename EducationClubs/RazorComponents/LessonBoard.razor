@@ -22,15 +22,15 @@
 {
     <div class="container-lesson">
         <div class="row-v">
-            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(1)"/></div>
-            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(2)"/></div>
-            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(3)"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(1).OrderBy(x => x.TimeStart).ToList()"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(2).OrderBy(x => x.TimeStart).ToList()"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(3).OrderBy(x => x.TimeStart).ToList()"/></div>
         </div>
    
         <div class="row-v">
-            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(4)"/></div>
-            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(5)"/></div>
-            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(6)"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(4).OrderBy(x => x.TimeStart).ToList()"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(5).OrderBy(x => x.TimeStart).ToList()"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(6).OrderBy(x => x.TimeStart).ToList()"/></div>
         </div>
     </div>
 } else
@@ -125,9 +125,10 @@
 
     List<Lesson> GetLessonsOfWeek(int weekId)
     {
-        listLesson = listLesson.Where(x => x.DayOfWeekId == weekId).OrderBy(x => x.TimeStart).ToList();
-        return listLesson;
+        return listLesson.Where(x => x.DayOfWeekId == weekId).ToList();
     }
+    
+    
     
     String GetShortTime(DateTime? dateTime)
     {
@@ -162,8 +163,6 @@
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         DialogService.Show<LessonAddingDialog>("", options);
-        
-        var s = listLesson.Count;
     }
 
     void OpenPage(String deeplink)
