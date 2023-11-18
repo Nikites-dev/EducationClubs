@@ -1,6 +1,7 @@
 ﻿@using EducationClubs.ScaffoldedModels
 @using Microsoft.EntityFrameworkCore
 @using System.Threading
+@using Microsoft.IdentityModel.Tokens
 @inject EducationClubContext EducationClubContext
 @inject DateTimeService DateTimeService
 @inject NavigationManager NavigationManager
@@ -18,11 +19,17 @@
 
             @foreach (var lesson in ItemLesson)
             {
-                <div class="lesson-item">
-                    <div style="width: 90px" class="lesson-name">@GetShortTime(lesson.TimeStart)</div>
+                <div class="lesson-item" @onclick="@(() => @OpenLesson(lesson))">
+                    <div class="box-time">
+                        <div class="time-f">@GetShortTime(lesson.TimeStart)</div>
+                        <div id="point">•</div>
+                        <div class="time-l">@GetShortTime(lesson.TimeFinish)</div>
+                    </div>
                     <div class="lesson-name">@GetLessonTitle(lesson.AdditionalClassId ?? default(int)).ToString()</div>
                     <div class="lesson-name3">
-                        <MudIconButton class="lesson-name3" Style="color: rgba(43,54,116,0.39);  margin: 0; padding: 0" Icon="@Icons.Material.Filled.Help" Size="Size.Small" @onclick="() => OpenLesson(lesson)"></MudIconButton>
+                        <MudTooltip Delay="600" Text="@getLessonTheme(lesson.Title)">
+                             <MudIconButton class="lesson-name3" Style="color: rgba(43,54,116,0.39);  margin: 0; padding: 0" Icon="@Icons.Material.Filled.Help" Size="Size.Small" @onclick="() => OpenLesson(lesson)"></MudIconButton>
+                        </MudTooltip>
                     </div>
                 </div>
                 <hr class="solid2">
@@ -65,5 +72,14 @@
     void OpenLesson(Lesson currentLesson)
     {
         NavigationManager.NavigateTo($"/tutor/lesson/{currentLesson.Id}");
+    }
+
+    String getLessonTheme(String theme)
+    {
+        if (theme.IsNullOrEmpty())
+        {
+            return "Тема не заполнена";
+        }
+        return "Тема: " + theme;
     }
 }
