@@ -3,43 +3,149 @@
 @using EducationClubs.RazorComponents.Dialogues;
 @using EducationClubs.ScaffoldedModels
 @using System.Globalization
+@using Microsoft.EntityFrameworkCore;
 @inject IDialogService DialogService
 @inject EducationClubContext EducationClubContext
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@inject AppGeneralSettings _appGeneralSettings
+
+<style>
+    .content {
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
+        height: 600px;
+        border: #dce1e6 solid 1px;
+        border-radius: 20px;
+        -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+        -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+        box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+    }
+</style>
 
 <HeaderMenu Title="Преподаватели"/>
-        <MudTable Items="@Elements" Filter="new Func<Tutor,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" Style="position: absolute; left:10%; top: 15%; align-self: center; width: 80%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; border-radius: 10px">
-            <ToolBarContent>
-                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                <MudSpacer />
-        <MudButton Variant="Variant.Outlined" Style="width: 23%; margin: 5px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="@OpenDialog">Добавить учителя</MudButton>
-            </ToolBarContent>
-            <HeaderContent>
-                <MudTh>Фамилия</MudTh>
-                <MudTh>Имя</MudTh>
-                <MudTh>Отчество</MudTh>
-                <MudTh>Просмотреть</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Фамилия">@context.Surname</MudTd>
-                <MudTd DataLabel="Имя">@context.Name</MudTd>
-                <MudTd DataLabel="Отчество">@context.Patronymic</MudTd>
-        <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Style="font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 8px">Просмотр</MudButton></MudTd>
-            </RowTemplate>
-            <PagerContent>
-                <MudTablePager PageSizeOptions="new int[] { 5 }" />
-            </PagerContent>
-        </MudTable>
+
+<MudTable Items="@Elements" Filter="new Func<Tutor,bool>(FilterFuncOne)" @bind-SelectedItem="selectedItem" Style="position: absolute; left:10%; top: 15%; align-self: center; width: 80%; box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; border-radius: 10px">
+    <ToolBarContent>
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        <MudSpacer />
+<MudButton Variant="Variant.Outlined" Style="width: 23%; margin: 5px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="@OpenDialog">Добавить учителя</MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Фамилия</MudTh>
+        <MudTh>Имя</MudTh>
+        <MudTh>Отчество</MudTh>
+        <MudTh>Просмотреть</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Фамилия">@context.Surname</MudTd>
+        <MudTd DataLabel="Имя">@context.Name</MudTd>
+        <MudTd DataLabel="Отчество">@context.Patronymic</MudTd>
+        <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Style="font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 8px" OnClick="() => OpenProfile(context)">Просмотр</MudButton></MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 5 }" />
+    </PagerContent>
+</MudTable>
+
+<MudDialog Class="content" @bind-IsVisible="visible" Options="options">
+    <TitleContent>
+        <div class="box-title">
+            <p class="content-title">Добавление учителя</p>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <div class="box-content">
+            <div class="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Dark" />
+                    <p>Фамилия:<span class="required"> *</span></p>
+                </div>
+                <MudTextField @bind-Value="surname" Variant="Variant.Outlined" />
+            </div>
+
+            <div class="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Dark" />
+                    <p>Имя:<span class="required"> *</span></p>
+                </div>
+                <MudTextField @bind-Value="name" Variant="Variant.Outlined" />
+            </div>
+
+            <div class="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Dark" />
+                    <p>Отчество:</p>
+                </div>
+                <MudTextField @bind-Value="patronymic" Variant="Variant.Outlined" />
+            </div>
+
+            <div class="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Markunread" Color="Color.Dark" />
+                    <p>Почта:<span class="required"> *</span></p>
+                </div>
+                <MudTextField @bind-Value="@login" Variant="Variant.Outlined" />
+            </div>
+
+            <div class="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Password" Color="Color.Dark" />
+                    <p>Пароль:<span class="required"> *</span></p>
+                </div>
+                <MudTextField @bind-Value="password" Variant="Variant.Outlined" />
+            </div>
+
+            <div class="box-content-row">
+                <div class="box-horizontal">
+                    <MudIcon Icon="@Icons.Material.Filled.Draw" Color="Color.Dark" />
+                    <p>Кружки:<span class="required"> *</span></p>
+                </div>
+                
+                @if(_appGeneralSettings.Edit)
+                {
+                    <MudSelect Dense="true" T="string" Variant="Variant.Outlined" MultiSelection="true" @bind-Value="currentAdditionalClass" @bind-SelectedValues="selectedClasses">
+                        @foreach (var lesson in crntAddClassList)
+                        {
+                            <MudSelectItem T="string" OnClick="() => GetTutorNull(lesson)" Value="@(lesson.Title)" />
+                        }
+                    </MudSelect>
+                }
+                else
+                {
+                    <MudSelect Dense="true" T="string" Variant="Variant.Outlined" MultiSelection="true" @bind-Value="currentAdditionalClass" >
+                        @foreach (var lesson in additionalClasses)
+                        {
+                            <MudSelectItem T="string" Value="@(lesson.Title)" />
+                        }
+                    </MudSelect>
+                }
+            </div>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        @if(_appGeneralSettings.Edit)
+        {
+            <MudButton Variant="Variant.Outlined" Style="margin: 15px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" Size="Size.Large" FullWidth="true" @onclick="@EditTutor">Изменить данные</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Outlined" Style="margin: 15px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" Size="Size.Large" FullWidth="true" @onclick="@AddTutor">Сохранить</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
 
 @code {
+    //Main part
     private string searchString = "";
     private Tutor selectedItem = new Tutor();
     private HashSet<Tutor> selectedItems = new HashSet<Tutor>();
-
-    private IEnumerable<Tutor> Elements = new List<Tutor>();
+    private List<Tutor> Elements = new List<Tutor>();
 
     protected override void OnInitialized()
     {
-        Elements = EducationClubContext.Tutors.ToList();
+        GetElementsList();
     }
 
     private bool FilterFuncOne(Tutor element) => FilterFunc(element, searchString);
@@ -57,9 +163,181 @@
         return false;
     }
 
-    private void OpenDialog()
+    private void GetElementsList()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        DialogService.Show<TutorAddingDialog>("", options);
+        Elements.Clear();
+        Elements = EducationClubContext.Tutors.ToList();
+    }
+
+    private void OpenProfile(Tutor crntTutor)
+    {
+        _appGeneralSettings.Edit = true;
+        GetFields(crntTutor);
+        visible = true;
+    }
+
+    //Part for the add dialog
+    private bool visible;
+    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+    string surname = "";
+    string name = "";
+    string patronymic = "";
+    string login = "";
+    string password = "";
+    string currentAdditionalClass = "";
+    public List<AdditionalClass> additionalClasses = new List<AdditionalClass>();
+    public List<AdditionalClass> crntAddClassList = new List<AdditionalClass>();
+    private IEnumerable<string> selectedClasses { get; set; }
+    private Tutor crntTutor = new Tutor();
+    private Account crntAccount = new Account();
+
+
+    private void OpenDialog() 
+    {
+        _appGeneralSettings.Edit = false;
+        GetNull();
+        visible = true;
+    }
+
+    private void GetTutorNull(AdditionalClass additionalClass)
+    {
+        if (additionalClass.TutorId != null)
+        {
+            additionalClass.TutorId = null;
+            EducationClubContext.AdditionalClasses.Update(additionalClass);
+            EducationClubContext.SaveChanges();
+            EducationClubContext.ChangeTracker.Clear();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAdditionalClass();
+        initSnakebarPosition(Defaults.Classes.Position.BottomCenter);
+    }
+
+    private void GetNull()
+    {
+        surname = "";
+        name = "";
+        patronymic = "";
+        login = "";
+        password = "";
+        currentAdditionalClass = "";
+        GetAdditionalClass();
+    }
+
+    private void GetFields(Tutor context)
+    {
+        crntTutor = context;
+        surname = crntTutor.Surname;
+        name = crntTutor.Name;
+        patronymic = crntTutor.Patronymic;
+
+        crntAccount = EducationClubContext.Accounts.FirstOrDefault(x => x.Id == crntTutor.AccountId);
+        login = crntAccount.Login;
+        password = crntAccount.Password;
+
+        crntAddClassList = EducationClubContext.AdditionalClasses.Where(x => x.TutorId == crntTutor.Id).ToList();
+        var selectedClassesList = new List<string>();
+        foreach (var club in crntAddClassList)
+        {
+            selectedClassesList.Add(club?.Title);
+        }
+        selectedClasses = selectedClassesList;
+
+        additionalClasses = EducationClubContext.AdditionalClasses.Where(x => x.TutorId == null).ToList();
+        crntAddClassList.AddRange(additionalClasses);
+    }
+
+    void initSnakebarPosition(string position)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = position;
+    }
+
+    async Task GetAdditionalClass()
+    {
+        additionalClasses.Clear();
+        additionalClasses = await EducationClubContext.AdditionalClasses.Where(x => x.TutorId == null).ToListAsync();
+    }
+
+    async Task AddTutor()
+    {
+        if (surname != "" || name != "" ||
+        login != "" || password != "" || currentAdditionalClass != "")
+        {
+            string[] additionalClassArray = currentAdditionalClass.Split(", ");
+
+            var newTutor = new Tutor()
+                {
+                    Surname = surname,
+                    Name = name,
+                    Patronymic = patronymic,
+                    IsWorking = true
+                };
+
+            var newAccount = new Account()
+                {
+                    Login = login,
+                    Password = password,
+                    RoleId = EducationClubContext.Roles.Where(x => x.Title == "Учитель").FirstOrDefault().Id
+                };
+
+            newAccount.Tutors.Add(newTutor);
+            await EducationClubContext.Accounts.AddAsync(newAccount);
+            await EducationClubContext.Tutors.AddAsync(newTutor);
+            await EducationClubContext.SaveChangesAsync();
+
+            foreach (var addClass in additionalClassArray)
+            {
+                var currentAClass = EducationClubContext.AdditionalClasses.Where(x => x.Title == addClass).FirstOrDefault();
+                currentAClass.TutorId = newTutor.Id;
+                EducationClubContext.AdditionalClasses.Update(currentAClass);
+            }
+
+            await EducationClubContext.SaveChangesAsync();
+
+            Snackbar.Add("Учитель успешно добавлен!", Severity.Success, config => { config.ShowCloseIcon = false; });
+            visible = false;
+            GetElementsList();
+            GetNull();
+        }
+        else
+        {
+            Snackbar.Add("Для добавления все Обязательные поля должны быть заполнены!", Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
+    }
+
+    public void EditTutor()
+    {
+        if (surname != "" || name != "" ||
+        login != "" || password != "" || currentAdditionalClass != "")
+        {
+            EducationClubContext.ChangeTracker.Clear();
+            EducationClubContext.Accounts.Update(crntAccount);
+            EducationClubContext.Tutors.Update(crntTutor);
+            EducationClubContext.SaveChanges();
+            EducationClubContext.ChangeTracker.Clear();
+
+            foreach (var addClass in selectedClasses)
+            {
+                var currentAClass = EducationClubContext.AdditionalClasses.FirstOrDefault(x => x.Title == addClass);
+                currentAClass.TutorId = crntTutor.Id;
+                EducationClubContext.AdditionalClasses.Update(currentAClass);
+            }
+
+            EducationClubContext.SaveChanges();
+            EducationClubContext.ChangeTracker.Clear();
+
+            Snackbar.Add("Учитель успешно изменен!", Severity.Success, config => { config.ShowCloseIcon = false; });
+            visible = false;
+            GetElementsList();
+            GetNull();
+        }
+        else
+        {
+            Snackbar.Add("Для добавления все Обязательные поля должны быть заполнены!", Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
     }
 }
