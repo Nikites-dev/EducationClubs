@@ -117,7 +117,7 @@
     {
         lesson = EducationClubContext.Lessons.Where(x => x.Id == int.Parse(lessonId)).FirstOrDefault();
         additionalClass = EducationClubContext.AdditionalClasses.Where(x => x.Id == lesson.AdditionalClassId).FirstOrDefault();
-        Students = EducationClubContext.Students.ToList();
+        Students = EducationClubContext.Students.Where(st => !EducationClubContext.Records.Any(x => x.StudentId == st.Id)).ToList();
         initSnakebarPosition(Defaults.Classes.Position.BottomCenter);
 
         Update();
