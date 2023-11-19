@@ -7,5 +7,6 @@ namespace EducationClubs.Services
     {
         public Account? authAccount { get; set; }
         public Tutor? AuthTutor { get; set; }
+        public bool Edit { get; set; }
     }
 }
