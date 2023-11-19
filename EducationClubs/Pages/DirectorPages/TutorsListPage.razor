@@ -105,7 +105,7 @@
                 
                 @if(_appGeneralSettings.Edit)
                 {
-                    <MudSelect Dense="true" T="string" Variant="Variant.Outlined" MultiSelection="true" @bind-Value="currentAdditionalClass" @bind-SelectedValues="selectedClasses">
+                    <MudSelect Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnValueChanged" MultiSelection="true" @bind-SelectedValues="selectedClasses">
                         @foreach (var lesson in crntAddClassList)
                         {
                             <MudSelectItem T="string" OnClick="() => GetTutorNull(lesson)" Value="@(lesson.Title)" />
@@ -125,14 +125,17 @@
         </div>
     </DialogContent>
     <DialogActions>
-        @if(_appGeneralSettings.Edit)
-        {
-            <MudButton Variant="Variant.Outlined" Style="margin: 15px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" Size="Size.Large" FullWidth="true" @onclick="@EditTutor">Изменить данные</MudButton>
-        }
-        else
-        {
-            <MudButton Variant="Variant.Outlined" Style="margin: 15px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" Size="Size.Large" FullWidth="true" @onclick="@AddTutor">Сохранить</MudButton>
-        }
+        <div style="align-items: center; display: inline-block">
+            @if(_appGeneralSettings.Edit)
+            {
+                <MudButton Variant="Variant.Outlined" Style="margin-right: 10px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="@EditTutor">Изменить данные</MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Outlined" Style="margin-right: 10px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="@AddTutor">Сохранить</MudButton>
+            }
+            <MudButton Variant="Variant.Outlined" Style="margin-right: 10px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="@CloseDialog">Закрыть</MudButton>
+        </div>
     </DialogActions>
 </MudDialog>
 
@@ -178,7 +181,7 @@
 
     //Part for the add dialog
     private bool visible;
-    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = false };
     string surname = "";
     string name = "";
     string patronymic = "";
@@ -191,12 +194,64 @@
     private Tutor crntTutor = new Tutor();
     private Account crntAccount = new Account();
 
+    private int count = 0;
+    private List<string> fixedAddClasses = new List<string>();
+    private AdditionalClass fixedAddClass = new AdditionalClass();
+
 
     private void OpenDialog() 
     {
         _appGeneralSettings.Edit = false;
         GetNull();
         visible = true;
+    }
+
+    private void CloseDialog()
+    {
+        foreach(var item in fixedAddClasses)
+        {
+            fixedAddClass = EducationClubContext.AdditionalClasses.FirstOrDefault(x => x.Title == item);
+            fixedAddClass.TutorId = crntTutor.Id;
+            EducationClubContext.AdditionalClasses.Update(fixedAddClass);
+        }
+
+        EducationClubContext.SaveChanges();
+        EducationClubContext.ChangeTracker.Clear();
+
+        count = 0;
+        visible = false;
+    }
+
+    private void OnValueChanged(string selected)
+    {
+        if (selected != "")
+        {
+            if(count != 1)
+            {
+                List<string> additionalClassList = selected.Split(", ").ToList();
+                AdditionalClass selectNull = crntAddClassList.FirstOrDefault(item => !additionalClassList.Contains(item.Title));
+
+                if (selectNull != null)
+                {
+                    if (selectNull.TutorId != null)
+                    {
+                        selectNull.TutorId = null;
+                        EducationClubContext.AdditionalClasses.Update(selectNull);
+                        EducationClubContext.SaveChanges();
+                        EducationClubContext.ChangeTracker.Clear();
+                    }
+                }
+            }
+            else
+            {
+                fixedAddClasses = selected.Split(", ").ToList();
+                count++;
+            }
+        }
+        else
+        {
+            count++;
+        }
     }
 
     private void GetTutorNull(AdditionalClass additionalClass)
@@ -314,6 +369,12 @@
         if (surname != "" || name != "" ||
         login != "" || password != "" || currentAdditionalClass != "")
         {
+            crntTutor.Surname = surname;
+            crntTutor.Name = name;
+            crntTutor.Patronymic = patronymic;
+            crntAccount.Login = login;
+            crntAccount.Password = password;
+
             EducationClubContext.ChangeTracker.Clear();
             EducationClubContext.Accounts.Update(crntAccount);
             EducationClubContext.Tutors.Update(crntTutor);
@@ -332,6 +393,7 @@
 
             Snackbar.Add("Учитель успешно изменен!", Severity.Success, config => { config.ShowCloseIcon = false; });
             visible = false;
+            count = 0;
             GetElementsList();
             GetNull();
         }
