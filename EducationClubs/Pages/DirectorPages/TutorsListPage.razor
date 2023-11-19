@@ -128,7 +128,8 @@
         <div style="align-items: center; display: inline-block">
             @if(_appGeneralSettings.Edit)
             {
-                <MudButton Variant="Variant.Outlined" Style="margin-right: 10px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="@EditTutor">Изменить данные</MudButton>
+                <MudButton Variant="Variant.Outlined" Style="margin: 5px; font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="DeleteTutor">Удалить</MudButton>
+                <MudButton Variant="Variant.Outlined" Style="margin-right: 10px; font-size: 16px; border: 3px solid #658dc3; color: #658dc3; border-radius: 10px" @onclick="@EditTutor">Изменить</MudButton>
             }
             else
             {
@@ -169,7 +170,7 @@
     private void GetElementsList()
     {
         Elements.Clear();
-        Elements = EducationClubContext.Tutors.ToList();
+        Elements = EducationClubContext.Tutors.Where(x => x.IsWorking == true).ToList();
     }
 
     private void OpenProfile(Tutor crntTutor)
@@ -177,6 +178,27 @@
         _appGeneralSettings.Edit = true;
         GetFields(crntTutor);
         visible = true;
+    }
+
+    void DeleteTutor()
+    {
+        crntTutor.IsWorking = false;
+        EducationClubContext.ChangeTracker.Clear();
+        EducationClubContext.Tutors.Update(crntTutor);
+        EducationClubContext.SaveChanges();
+        EducationClubContext.ChangeTracker.Clear();
+
+        foreach (var club in EducationClubContext.AdditionalClasses.Where(x => x.TutorId == crntTutor.Id).ToList())
+        {
+            club.TutorId = null;
+            EducationClubContext.AdditionalClasses.Update(club);
+            EducationClubContext.SaveChanges();
+            EducationClubContext.ChangeTracker.Clear();
+        }
+        Snackbar.Add("Учитель успешно удален!", Severity.Success);
+        count = 0;
+        visible = false;
+        GetElementsList();
     }
 
     //Part for the add dialog
