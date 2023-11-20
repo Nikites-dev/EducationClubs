@@ -23,7 +23,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Название">@context.Title</MudTd>
-        <MudTd DataLabel="Руководитель">@EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Surname @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Name @EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault().Patronymic</MudTd>
+        <MudTd DataLabel="Руководитель">@GetFullName(context)</MudTd>
         <MudTd DataLabel="Просмотреть"><MudButton Variant="Variant.Outlined" Style="font-size: 16px; border: 2px solid #658dc3; color: #658dc3; border-radius: 8px" @onclick="() => OpenDialog(context)">Просмотр</MudButton></MudTd>
     </RowTemplate>
     <PagerContent>
@@ -95,7 +95,7 @@
     private AdditionalClass selectedItem = new AdditionalClass();
     private HashSet<AdditionalClass> selectedItems = new HashSet<AdditionalClass>();
     private DialogOptions closeButton = new DialogOptions { CloseOnEscapeKey = false, CloseButton = false };
-
+    private Tutor crntTutor = new Tutor();
 
     private IEnumerable<AdditionalClass> Elements = new List<AdditionalClass>();
 
@@ -103,6 +103,18 @@
     {
         Elements = await EducationClubContext.AdditionalClasses.Where(x => x.IsActive == true).ToListAsync();
         Tutors = await EducationClubContext.Tutors.ToListAsync();
+    }
+
+    private string GetFullName(AdditionalClass context)
+    {
+        if (context.TutorId != null)
+        {
+            crntTutor = EducationClubContext.Tutors.Where(x => x.Id == context.TutorId).FirstOrDefault(); return $"{crntTutor.Surname} {crntTutor.Name} {crntTutor.Patronymic}";
+        }
+        else
+        {
+            return "----------";
+        }
     }
 
     private void OpenDialog(AdditionalClass additionalClass)
