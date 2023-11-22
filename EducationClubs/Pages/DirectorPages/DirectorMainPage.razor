@@ -2,6 +2,9 @@
 
 @using EducationClubs.ScaffoldedModels;
 @using System.Globalization;
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.IdentityModel.Tokens
+@using Newtonsoft.Json.Linq
 @inject EducationClubContext EducationClubContext
 
 <HeaderMenu Title="Главная"/>
@@ -34,13 +37,24 @@
         
     </MudPaper>
 <MudPaper Style="position: absolute; left:10%; top: 28%; align-self: center; width: 80%;  box-shadow: rgb(38, 57, 77) 0px 5px 10px -0px; text-align:center; border-radius: 10px;">
-        <div>
+    <div>
+        @if (!data.IsNullOrEmpty())
+        {
             <MudText style="font-size: 24px">Сегодняшняя посещаемость занятий</MudText>
-            <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Bottom" Width="400px" Height="400px"
-                      InputData="@data" InputLabels="@labels">
+            <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Bottom" Width="400px" Height="400px" InputData="@data" InputLabels="@labels">
+
+                <CustomGraphics>
+
+                    <text class="donut-inner-text" x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="2">Всего отсутствовали</text>
+                    <text class="donut-inner-text" x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="5">@data.Sum().ToString()</text>
+
+                </CustomGraphics>
+
             </MudChart>
-        </div>
-    </MudPaper>
+             
+        }
+    </div>
+</MudPaper>
 
 @code {
     private IEnumerable<Student> ListOfStudents = new List<Student>();
@@ -89,7 +103,16 @@
             }
         }
 
-        UpdateChart();
+        FillChart();
+    }
+
+    String getInfo(String data)
+    {
+        if (data == "0")
+        {
+            return "";
+        }
+        return data;
     }
 
     private void UpdateChart()
@@ -121,5 +144,33 @@
 
         data = dataList.ToArray().Select(Convert.ToDouble).ToArray();
         labels = labelsList.ToArray();
+        
+    }
+
+    private void FillChart()
+    {
+        List<string> labelsList = new();
+        dataList.Clear();
+        labelsList.Clear();
+        
+        var attendance = EducationClubContext.Attendences
+                .Include(x => x.Lesson)
+                .ThenInclude(x => x.AdditionalClass)
+                .Where(x => ((DateTime)x.Lesson.TimeStart).Date == date)
+                .ToList();
+
+        var grouped = attendance.GroupBy(x => x.Lesson.AdditionalClass.Title);
+
+        
+        
+        foreach (var item in grouped)
+        {
+            dataList.Add(item.Count());
+            labelsList.Add($"{item.Key} - {item.Count()}");
+        }
+        
+        data = dataList.ToArray().Select(Convert.ToDouble).ToArray();
+        labels = labelsList.ToArray();
+        StateHasChanged();
     }
 }

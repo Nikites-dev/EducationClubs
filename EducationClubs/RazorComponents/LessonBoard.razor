@@ -5,6 +5,7 @@
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor.Extensions
 @using EducationClubs.RazorComponents.Dialogues
+@using Firebase.Auth
 @inject EducationClubContext EducationClubContext
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
@@ -127,9 +128,12 @@
     {
         var s = listLesson.Where(x => x.DayOfWeekId == weekId).ToList();
 
-        var list = s.OrderBy(x => x.TimeStart).ToList(); 
-        
-        return list;
+        var list = s.OrderBy(x => (DateTime) x.TimeStart != null ? (DateTime) x.TimeStart : DateTime.Now).ToList(); 
+
+        var persons = from p in s orderby (DateTime) p.TimeFinish select p;
+       
+
+        return persons.ToList();
       //   return listLesson.Where(x => x.DayOfWeekId == weekId).ToList();
     }
     

@@ -52,6 +52,12 @@
     [Parameter]
     public List<AdditionalClass> AddClassList { get; set; }
 
+    protected override void OnInitialized()
+    {
+        ItemLesson = ItemLesson?.OrderBy(x => x.TimeStart).ToList();
+        base.OnInitialized();
+    }
+
     String GetShortTime(DateTime? dateTime)
     {
         DateTime convertDate = (DateTime) dateTime;

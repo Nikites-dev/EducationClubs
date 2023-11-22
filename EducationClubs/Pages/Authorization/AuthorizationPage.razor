@@ -63,7 +63,7 @@
     }
 </div>
 @code {
-    private String password = "123";
+    private String password;
     private bool showLoader = false;
     private bool isDbConnect = false;
     private Tutor tutor = new Tutor();
@@ -74,7 +74,7 @@
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; } = "plaksin@tutor.ru";
+        public string Email { get; set; }
     }
     
     protected override async Task OnInitializedAsync()
