@@ -1,17 +1,21 @@
 ﻿@inherits LayoutComponentBase
 
 <MudThemeProvider Theme="_currentTheme" />
-<MudDialogProvider FullWidth="true"
-                   MaxWidth="MaxWidth.ExtraSmall"
-                   CloseButton="true"
-                   DisableBackdropClick="true"
-                   Position="DialogPosition.Center"
-                   CloseOnEscapeKey="true" />
+<MudDialogProvider
+    FullWidth="true"
+    MaxWidth="MaxWidth.ExtraSmall"
+    CloseButton="true"
+    DisableBackdropClick="true"
+    Position="DialogPosition.Center"
+    CloseOnEscapeKey="true"
+/>
 <MudSnackbarProvider/>
+
 <main>
     @Body
 </main>
 @code {
+    
     private readonly MudTheme _currentTheme = new()
         {
             Palette = new PaletteLight

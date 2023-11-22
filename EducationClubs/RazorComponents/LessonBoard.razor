@@ -22,7 +22,7 @@
 {
     <div class="container-lesson">
         <div class="row-v">
-            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(1).OrderBy(x => x.TimeStart).ToList()"/></div>
+            <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(1)"/></div>
             <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(2).OrderBy(x => x.TimeStart).ToList()"/></div>
             <div class="item"><LessonCard AddClassList="AddClassList" ItemLesson="@GetLessonsOfWeek(3).OrderBy(x => x.TimeStart).ToList()"/></div>
         </div>
@@ -125,7 +125,12 @@
 
     List<Lesson> GetLessonsOfWeek(int weekId)
     {
-        return listLesson.Where(x => x.DayOfWeekId == weekId).ToList();
+        var s = listLesson.Where(x => x.DayOfWeekId == weekId).ToList();
+
+        var list = s.OrderBy(x => x.TimeStart).ToList(); 
+        
+        return list;
+      //   return listLesson.Where(x => x.DayOfWeekId == weekId).ToList();
     }
     
     

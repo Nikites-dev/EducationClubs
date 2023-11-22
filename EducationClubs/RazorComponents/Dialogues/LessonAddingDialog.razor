@@ -38,7 +38,7 @@
                     <MudIcon Icon="@Icons.Material.Filled.MenuBook" Color="Color.Dark" />
                     <p>Тема занятия:</p>
                 </div>
-                <MudTextField @bind-Value="crntLessonTitle" Label="Тема" Variant="Variant.Outlined" />
+                <MudTextField @bind-Value="crntLessonTitle" Variant="Variant.Outlined" />
             </div>
 
             <div class="box-content-row">
@@ -47,7 +47,7 @@
                     <p>День недели:<span class="required"> *</span></p>
                 </div>
 
-                <MudSelect Dense="true" @bind-Value="crntDayofWeek" T="string" Label="Понедельник" Variant="Variant.Outlined">
+                <MudSelect Dense="true" @bind-Value="crntDayofWeek" T="string" Variant="Variant.Outlined">
                     <MudSelectItem Value="@(DateTimeService.GetDayNameRss(1))" />
                     <MudSelectItem Value="@(DateTimeService.GetDayNameRss(2))" />
                     <MudSelectItem Value="@(DateTimeService.GetDayNameRss(3))" />
@@ -86,7 +86,7 @@
                 </div>
 
                 <MudStack>
-                    <MudDateRangePicker Style="padding: 0; margin: 0" @ref="_picker" @bind-DateRange="_dateRange" AutoClose="true">
+                    <MudDateRangePicker Style="padding: 0; margin: 0;"  PickerVariant="PickerVariant.Dialog" @ref="_picker" @bind-DateRange="_dateRange" AutoClose="true">
                         <PickerActions>
                             <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Clear</MudButton>
                             <MudButton OnClick="@(() => _picker.Close(false))">Cancel</MudButton>
