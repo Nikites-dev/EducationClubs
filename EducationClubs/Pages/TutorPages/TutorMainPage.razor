@@ -45,6 +45,8 @@ else
     private DateTime firstDayOfWeek = DateTime.Now;
     private DateTime lastDayOfWeek = DateTime.Now;
     
+    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    
     protected override async Task OnInitializedAsync()
     {
         if (AppGeneralSettings.authAccount == null)
@@ -83,7 +85,7 @@ else
     
     async Task OpenDialog()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true  };
         DialogResult result = await DialogService.Show<LessonAddingDialog>("", options).Result;
 
         if (result.Canceled)
